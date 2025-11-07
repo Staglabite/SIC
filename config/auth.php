@@ -36,24 +36,17 @@ return [
     */
 
     'guards' => [
-        'remin' => [
+        'renmin' => [
             'driver' => 'session',
-            'provider' => 'remin',
+            'provider' => 'renmin',
         ],
         'pimpinan' => [
             'driver' => 'session',
             'provider' => 'pimpinan',
         ],
-    ],
-
-    'providers' => [
-        'remin' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Remin::class,
-        ],
-        'pimpinan' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Pimpinan::class,
+        'personel' => [
+            'driver' => 'session',
+            'provider' => 'personel',
         ],
     ],
 
@@ -75,16 +68,24 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'renmin' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\Renmin::class,
         ],
+        'pimpinan' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Pimpinan::class,
+        ],
+        'personel' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Personel::class,
+        ],
+    ],
 
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
-    ],
 
     /*
     |--------------------------------------------------------------------------

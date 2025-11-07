@@ -10,7 +10,7 @@ class PengajuanCuti extends Model
     protected $table = 'pengajuan_cuti';
 
     protected $fillable = [
-        'personel_id', 'remin_id', 'pimpinan_id', 'kode_cuti',
+        'personel_id', 'renmin_id', 'pimpinan_id', 'kode_cuti',
         'pengikut', 'pergi_dari', 'mulai_tgl', 'sampai_tgl',
         'tujuan', 'transportasi', 'catatan',
         'namaFile_bukti', 'pathFile_bukti', 'status'
@@ -26,9 +26,9 @@ class PengajuanCuti extends Model
         return $this->belongsTo(Personel::class, 'personel_id', 'nrp');
     }
 
-    public function remin(): BelongsTo
+    public function renmin(): BelongsTo
     {
-        return $this->belongsTo(Remin::class, 'renmin_id', 'kode_renmin');
+        return $this->belongsTo(Renmin::class, 'renmin_id', 'kode_renmin');
     }
 
     public function pimpinan(): BelongsTo

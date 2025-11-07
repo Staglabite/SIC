@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Hash;
 
 class Personel extends Authenticatable
 {
@@ -13,12 +11,11 @@ class Personel extends Authenticatable
 
     protected $table = 'personel';
     protected $primaryKey = 'nrp';
-    public $incrementing = false;        // karena PK string (NRP)
+    public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'nrp',
-        'nrp_',
         'password',
         'name',
         'pangkat',
@@ -28,33 +25,19 @@ class Personel extends Authenticatable
         'satker_id',
     ];
 
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password'];
 
-    protected $casts = [
-        'satker_id' => 'integer',
-    ];
-
-    // Auto-hash password
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = Hash::make($value);
-    }
-
-    // Relasi ke Satker
-    public function satker(): BelongsTo
+    public function satker()
     {
         return $this->belongsTo(Satker::class, 'satker_id', 'kode_satker');
     }
 
-    public function pengajuanIzin(): HasMany
+    public function pengajuanIzins()
     {
         return $this->hasMany(PengajuanIzin::class, 'personel_id', 'nrp');
     }
 
-        public function pengajuanCuti(): HasMany
+    public function pengajuanCutis()
     {
         return $this->hasMany(PengajuanCuti::class, 'personel_id', 'nrp');
     }

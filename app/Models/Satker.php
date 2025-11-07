@@ -15,7 +15,7 @@ class Satker extends Model
 
     protected $fillable = [
         'kode_satker',
-        'kode_remin',
+        'kode_renmin',
         'kode_pimpinan',
         'name',
         'deskripsi'
@@ -23,7 +23,7 @@ class Satker extends Model
 
     public function renmin(): BelongsTo
     {
-        return $this->belongsTo(Remin::class, 'kode_renmin', 'kode_renmin');
+        return $this->belongsTo(Renmin::class, 'kode_renmin', 'kode_renmin');
     }
 
     public function pimpinan(): BelongsTo

@@ -14,7 +14,7 @@ return new class extends Migration
             // FK: personel_id → nrp (string) di tabel personel
             $table->string('personel_id');
 
-            // FK: remin_id & pimpinan_id → unsignedBigInteger
+            // FK: renmin_id & pimpinan_id → unsignedBigInteger
             $table->unsignedBigInteger('renmin_id');
             $table->unsignedBigInteger('pimpinan_id');
 

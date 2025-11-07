@@ -11,7 +11,7 @@ class PengajuanIzin extends Model
 
     protected $fillable = [
         'personel_id',
-        'remin_id',
+        'renmin_id',
         'pimpinan_id',
         'keperluan',
         'pengikut',
@@ -37,9 +37,9 @@ class PengajuanIzin extends Model
         return $this->belongsTo(Personel::class, 'personel_id', 'nrp');
     }
 
-    public function remin(): BelongsTo
+    public function renmin(): BelongsTo
     {
-        return $this->belongsTo(Remin::class, 'remin_id', 'kode_remin');
+        return $this->belongsTo(Renmin::class, 'renmin_id', 'kode_renmin');
     }
 
     public function pimpinan(): BelongsTo

@@ -10,20 +10,15 @@ return new class extends Migration
     {
         Schema::create('personel', function (Blueprint $table) {
             $table->string('nrp')->primary();
-
-            // PAKAI unsignedBigInteger BIAR SAMA DENGAN kode_satker di satker
             $table->unsignedBigInteger('satker_id');
-
             $table->string('password');
             $table->string('name');
             $table->string('pangkat');
             $table->string('golongan');
             $table->string('jabatan');
             $table->string('role');
-
             $table->timestamps();
 
-            // Foreign key dengan tipe data yang BENAR
             $table->foreign('satker_id')
                   ->references('kode_satker')
                   ->on('satker')

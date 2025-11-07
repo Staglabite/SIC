@@ -14,7 +14,7 @@ return new class extends Migration
             // FIX 1: personel_id → string (sama dengan nrp)
             $table->string('personel_id');
 
-            // FIX 2: remin_id & pimpinan_id → unsignedBigInteger
+            // FIX 2: renmin_id & pimpinan_id → unsignedBigInteger
             $table->unsignedBigInteger('renmin_id');
             $table->unsignedBigInteger('pimpinan_id');
 
