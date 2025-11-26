@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('catatan')->nullable();
             $table->string('namaFile_bukti')->nullable();
             $table->string('pathFile_bukti')->nullable();
-            $table->string('status')->default('pending'); // pending, disetujui, ditolak
+            $table->string('status')->default('Proses'); // pending, disetujui, ditolak
 
             $table->timestamps();
 

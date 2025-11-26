@@ -25,19 +25,19 @@ class LoginController extends Controller
 
         $identifier = $request->identifier;
 
-        // 1. Cek Personel → pakai NRP
-        if (Auth::guard('personel')->attempt(['nrp' => $identifier, 'password' => $request->password])) {
-            return redirect()->route('dashboard.personel');
-        }
-
         // 2. Cek Renmin → pakai username
         if (Auth::guard('renmin')->attempt(['username' => $identifier, 'password' => $request->password])) {
-            return redirect()->route('dashboard.renmin');
+            return redirect()->route('renmin.dashboard');
         }
 
         // 3. Cek Pimpinan → pakai username
         if (Auth::guard('pimpinan')->attempt(['username' => $identifier, 'password' => $request->password])) {
             return redirect()->route('dashboard.pimpinan');
+        }
+
+        // 1. Cek Personel → pakai NRP
+        if (Auth::guard('personel')->attempt(['nrp' => $identifier, 'password' => $request->password])) {
+            return redirect()->route('personel.dashboard');
         }
 
         // Jika semua gagal
