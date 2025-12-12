@@ -12,6 +12,7 @@ return new class extends Migration
             $table->integer('kode_cuti')->autoIncrement()->primary();
             $table->string('jenis_cuti');
             $table->text('deskripsi')->nullable();
+            $table->integer('jatah');
             $table->timestamps();
         });
     }

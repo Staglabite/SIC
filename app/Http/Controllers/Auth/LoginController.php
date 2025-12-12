@@ -32,7 +32,7 @@ class LoginController extends Controller
 
         // 3. Cek Pimpinan → pakai username
         if (Auth::guard('pimpinan')->attempt(['username' => $identifier, 'password' => $request->password])) {
-            return redirect()->route('dashboard.pimpinan');
+            return redirect()->route('pimpinan.dashboard');
         }
 
         // 1. Cek Personel → pakai NRP

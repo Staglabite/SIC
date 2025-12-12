@@ -1,6 +1,6 @@
-{{-- resources/views/dashboard/renminvalidasi.blade.php --}}
+{{-- resources/views/dashboard/pimpinanapproval.blade.php --}}
 @extends('layouts.app')
-@section('title', 'Renmin - Validasi Pengajuan')
+@section('title', 'Pimpinan - Approval Pengajuan')
 
 @section('content')
 
@@ -24,13 +24,13 @@
 
 </style>
 
-<div class="min-h-screen bg-white py-2">
+<div class="min-h-screen bg-gray-50 py-2">
     <div class="max-w-7xl mx-auto px-4">
 
-        <!-- TABEL -->
+        <!-- TABEL APPROVAL -->
         <div class="bg-white rounded-xl shadow-2xl border-2 overflow-hidden">
             <div class="p-8">
-                <h2 class="text-3xl font-bold text-black mb-4">Tabel Pengajuan</h2>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Daftar Pengajuan</h2>
 
                 <div class="rounded-xl overflow-x-auto">
                     <table class="border-2 min-w-full divide-y divide-gray-200" id="tabelValidasi">
@@ -48,25 +48,25 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($pengajuan as $i => $p)
                             <tr class="hover:bg-indigo-50 transition">
-                                <td class="px-6 py-5 text-sm  text-center">{{ $i + 1 }}</td>
-                                <td class="px-6 py-5 text-sm  text-black">{{ $p->nama_personel ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm text-center  text-black">{{ $p->nrp ?? '-' }}</td>
+                                <td class="px-6 py-5 text-sm ">{{ $i + 1 }}</td>
+                                <td class="px-6 py-5 text-sm text-black">{{ $p->nama_personel ?? '-' }}</td>
+                                <td class="px-6 py-5 text-sm text-black">{{ $p->nrp ?? '-' }}</td>
                                 <td class="px-6 py-5">
-                                    <span class="whitespace-nowrap nline-block px-5 py-2.5 rounded-full text-xs font-bold {{ $p->jenis == 'cuti' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
+                                    <span class="whitespace-nowrap inline-block px-5 py-2.5 rounded-full text-xs font-bold {{ $p->jenis == 'cuti' ? 'bg-purple-100 text-purple-800' : 'bg-cyan-100 text-cyan-800' }}">
                                         {{ strtoupper($p->nama_jenis) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-5 text-sm text-center whitespace-nowrap">
+                                <td class="px-6 py-5 text-sm whitespace-nowrap text-center">
                                     {{ \Carbon\Carbon::parse($p->tanggal_mulai)->format('d M Y') }}
                                     @if($p->tanggal_selesai) → {{ \Carbon\Carbon::parse($p->tanggal_selesai)->format('d M Y') }} @endif
                                 </td>
                                 <td class="px-6 py-5 text-center">
                                     @php $s = $p->status; @endphp
                                     <span class="px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap
-                                        {{ $s == 'Disetujui' || $s == 'Tervalidasi' ? 'bg-emerald-100 text-emerald-800' : 
+                                        {{ $s == 'Disetujui' ? 'bg-emerald-100 text-emerald-800' : 
                                            ($s == 'Ditolak' ? 'bg-red-100 text-red-800' : 
-                                           ($s == 'Tidak Valid' ? 'bg-orange-100 text-orange-800' : 'bg-amber-100 text-amber-800')) }}">
-                                        {{ $s == 'Proses' ? 'Menunggu' : $s }}
+                                           ($s == 'Tervalidasi' ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-800')) }}">
+                                        {{ $s == 'Tervalidasi' ? 'Menunggu Persetujuan' : $s }}
                                     </span>
                                 </td>
 
@@ -128,7 +128,6 @@
         </div>
     </div>
 </div>
-
 
 {{-- MODAL DETAIL – VERSI FINAL TERBARU --}}
 <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4"
@@ -242,7 +241,6 @@
                     <!-- Diisi oleh JavaScript -->
                 </div>
 
-                <!-- Kanan: tombol Tutup -->
                 <div class="flex gap-3">
                     <button type="button" onclick="closeDetailModal()"
                             class="px-8 py-3 bg-white text-black font-bold border-1 hover:bg-gray-200 rounded-lg shadow transition">
@@ -255,76 +253,11 @@
 </div>
 
 <script>
-    window.baseUrl = '{{ asset("") }}'.replace(/\/$/, '');
-</script>
-<script>
-// DEBUGCONSOLE - untuk memastikan fungsi dipanggil
-console.log('JavaScript loaded');
-
-// Fungsi toggle dropdown yang sederhana dan efektif
-function toggleDropdown(id, event) {
-    console.log('Toggle dropdown called for ID:', id);
-    
-    if (event) {
-        event.stopPropagation();
-        event.preventDefault();
-    }
-    
-    const dropdown = document.getElementById('dropdown-' + id);
-    console.log('Dropdown element:', dropdown);
-    
-    if (!dropdown) {
-        console.error('Dropdown element not found for ID:', id);
-        return;
-    }
-    
-    // Tutup semua dropdown lainnya
-    document.querySelectorAll('.dropdown-menu').forEach(otherDropdown => {
-        if (otherDropdown.id !== 'dropdown-' + id) {
-            otherDropdown.classList.add('hidden');
-        }
-    });
-    
-    // Toggle dropdown current
-    dropdown.classList.toggle('hidden');
-    console.log('Dropdown hidden status:', dropdown.classList.contains('hidden'));
-}
-
-// Fungsi untuk handle status update dari dropdown
-function handleStatusUpdate(id, status, tipe) {
-    console.log('Handle status update:', id, status, tipe);
-    
-    // Tutup dropdown
-    const dropdown = document.getElementById('dropdown-' + id);
-    if (dropdown) {
-        dropdown.classList.add('hidden');
-    }
-    
-    // Lakukan update status
-    updateStatus(id, status, tipe);
-}
-
-// Event listener untuk menutup dropdown ketika klik di luar
-document.addEventListener('click', function(e) {
-    console.log('Document clicked');
-    
-    const isClickInsideDropdown = e.target.closest('.dropdown-menu');
-    const isClickOnTrigger = e.target.closest('.dropdown-trigger');
-    
-    if (!isClickInsideDropdown && !isClickOnTrigger) {
-        document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
-            dropdown.classList.add('hidden');
-        });
-    }
-});
-
-// UPDATE STATUS function 
+// Update route ke route pimpinan
 function updateStatus(id, status, tipe) {
-    if (!confirm(`Yakin mengubah status menjadi "${status}"?`)) return;
-    
-    console.log('Updating status:', { id, status, tipe });
-    
-    fetch("{{ route('renmin.validasi.update') }}", {
+    if (!confirm(`Apakah Anda yakin ingin ${status == 'Disetujui' ? 'menyetujui' : 'menolak'} pengajuan ini?`)) return;
+
+    fetch("{{ route('pimpinan.validasi.update') }}", {
         method: "POST",
         headers: { 
             "Content-Type": "application/json", 
@@ -333,24 +266,64 @@ function updateStatus(id, status, tipe) {
         },
         body: JSON.stringify({ id, status, tipe })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
+    .then(response => response.ok ? response.json() : Promise.reject())
     .then(data => { 
         if (data.success) { 
-            alert('Status berhasil diubah!'); 
+            alert('Status berhasil diubah menjadi "' + status + '"'); 
             location.reload(); 
         } else {
-            alert('Gagal mengubah status: ' + (data.message || 'Unknown error'));
+            alert('Gagal: ' + (data.message || 'Unknown error'));
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan saat mengubah status');
-    });
+    .catch(() => alert('Terjadi kesalahan jaringan'));
+}
+
+function kirimStatus(id, statusBaru, tipe) {
+    fetch("{{ route('pimpinan.validasi.update') }}", {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json", 
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify({ 
+            id: id, 
+            status: statusBaru,     // ← pastikan 'Disetujui' atau 'Ditolak'
+            tipe: tipe 
+        })
+    })
+    .then(r => r.json().then(data => ({ok: r.ok, data})))
+    .then(res => {
+        if (res.ok && res.data.success) {
+            alert('Pengajuan berhasil ' + (statusBaru === 'Disetujui' ? 'disetujui' : 'ditolak'));
+            location.reload();
+        } else {
+            alert('Gagal: ' + (res.data.message || 'Terjadi kesalahan'));
+        }
+    })
+    .catch(() => alert('Terjadi kesalahan jaringan atau server'));
+}
+
+// Fungsi lainnya tetap sama
+function openBuktiModal(url, filename) {
+    document.getElementById('modalTitle').textContent = filename;
+    document.getElementById('downloadLink').href = url;
+    const frame = document.getElementById('buktiFrame');
+    const img = document.getElementById('buktiImage');
+    if (url.match(/\.(jpeg|jpg|png|gif|webp)$/i)) {
+        img.src = url; img.classList.remove('hidden'); frame.classList.add('hidden');
+    } else {
+        frame.src = url; frame.classList.remove('hidden'); img.classList.add('hidden');
+    }
+    document.getElementById('buktiModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeBuktiModal() {
+    document.getElementById('buktiModal').classList.add('hidden');
+    document.getElementById('buktiFrame').src = '';
+    document.getElementById('buktiImage').src = '';
+    document.body.style.overflow = 'auto';
 }
 
 function openDetailModal(data) {
@@ -385,7 +358,7 @@ function openDetailModal(data) {
     // PERBAIKAN: Hapus baris error "07"!
     badge.className = 'inline-block px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider border';
 
-    if (['Tervalidasi', 'Disetujui'].includes(data.status)) {
+    if (['Disetujui', 'Tervalidasi'].includes(data.status)) {
         badge.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
     } else if (data.status === 'Ditolak') {
         badge.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
@@ -397,7 +370,6 @@ function openDetailModal(data) {
         badge.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-300');
     }
 
-    // === BUKTI PENDUKUNG ===
     // Bukti
     const buktiFileName = document.getElementById('buktiFileName');
     const buktiLink = document.getElementById('buktiLinkContainer');
@@ -411,36 +383,33 @@ function openDetailModal(data) {
         buktiLink.innerHTML = '';
     }
 
-    // === TOMBOL AKSI DI FOOTER ===
+    // === TOMBOL AKSI DI FOOTER (KODE BARU - GANTI YANG LAMA) ===
     const footerAksi = document.getElementById('aksiFooterContainer');
-    if (data.status === 'Proses') {
-        footerAksi.innerHTML = `
-            <button onclick="updateStatus(${data.id}, 'Tervalidasi', '${data.jenis}')" 
-                    class="bg-gradient-to-r from-emerald-600 to-green-700 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition text-m">
-                Valid
-            </button>
+    footerAksi.innerHTML = ''; // kosongkan dulu
 
-            <div class="relative">
-                <button type="button" onclick="toggleModalDropdown(event)" 
-                        class="bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition text-m flex items-center gap-2 dropdown-trigger-modal">
-                    Tidak Valid
-                    <svg class="w-5 h-5 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
+    if (data.status === 'Tervalidasi') {
+        // Tombol SETUJUI (khusus modal)
+        const btnSetujui = document.createElement('button');
+        btnSetujui.textContent = 'Setujui';
+        btnSetujui.className = 'bg-gradient-to-r from-emerald-600 to-green-700 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition text-lg';
+        btnSetujui.onclick = function() {
+            if (confirm('Apakah Anda yakin ingin menyetujui pengajuan ini?')) {
+                kirimStatus(data.id, 'Disetujui', data.jenis);  // <-- status yang benar
+            }
+        };
 
-                <div id="modalTolakDropdown" class="hidden absolute left-0 mt-2 w-full bg-white rounded-lg shadow-2xl border-2 border-gray-300 z-[9999] dropdown-menu">
-                    <button type="button" onclick="updateStatus(${data.id}, 'Ditolak', '${data.jenis}')"
-                            class="block w-full text-left px-5 py-3 text-red-700 hover:bg-red-50 font-medium transition">
-                        Ditolak
-                    </button>
-                    <button type="button" onclick="updateStatus(${data.id}, 'Tidak Valid', '${data.jenis}')"
-                            class="block w-full text-left px-5 py-3 text-orange-700 hover:bg-orange-50 font-medium border-t border-gray-200 transition">
-                        Tidak Valid
-                    </button>
-                </div>
-            </div>
-        `;
+        // Tombol TOLAK (khusus modal)
+        const btnTolak = document.createElement('button');
+        btnTolak.innerHTML = 'Tidak Setuju';
+        btnTolak.className = 'bg-gradient-to-r from-red-600 to-rose-700 text-white font-bold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition text-lg';
+        btnTolak.onclick = function() {
+            if (confirm('Apakah Anda yakin ingin menolak pengajuan ini?')) {
+                kirimStatus(data.id, 'Ditolak', data.jenis);
+            }
+        };
+
+        footerAksi.appendChild(btnSetujui);
+        footerAksi.appendChild(btnTolak);
     } else {
         footerAksi.innerHTML = '<span class="text-green-500 font-bold text-lg">Sudah Diproses</span>';
     }
@@ -458,27 +427,7 @@ function closeDetailModal() {
 function formatDate(date) {
     return new Date(date).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
 }
-
-// Inisialisasi setelah halaman dimuat
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded');
-    console.log('Found dropdown triggers:', document.querySelectorAll('.dropdown-trigger').length);
-    console.log('Found dropdown menus:', document.querySelectorAll('.dropdown-menu').length);
-});
-
-function toggleModalDropdown(event) {
-    event.stopPropagation();
-    document.getElementById('modalTolakDropdown')?.classList.toggle('hidden');
-}
-
-// Tutup dropdown saat klik luar
-document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('modalTolakDropdown');
-    const trigger = e.target.closest('.dropdown-trigger-modal');
-    if (dropdown && !dropdown.contains(e.target) && !trigger) {
-        dropdown.classList.add('hidden');
-    }
-});
+// Sisanya sama persis seperti sebelumnya (modal bukti & detail)
 
         $(document).ready(function () {
             $('#tabelValidasi').DataTable({
@@ -492,13 +441,13 @@ document.addEventListener('click', function(e) {
                     "sInfo":           "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
                     "sInfoEmpty":      "Menampilkan 0 sampai 0 dari 0 data",
                     "sInfoFiltered":   "(disaring dari _MAX_ data keseluruhan)",
-                    "sSearch":         "Cari:",
+                    "sSearch":         "",
                     "sSearchPlaceholder": "Ketik untuk mencari...",
                     "oPaginate": {
-                        "sFirst":    "Pertama",
-                        "sPrevious": "Sebelumnya",
-                        "sNext":     "Berikutnya",
-                        "sLast":     "Terakhir"
+                        "sFirst":    "<<",
+                        "sPrevious": "<",
+                        "sNext":     ">",
+                        "sLast":     ">>"
                     }
                 },
 
@@ -510,47 +459,6 @@ document.addEventListener('click', function(e) {
         });
 </script>
 
-@push('styles')
-<style>
-.max-h-95vh { max-height: 95vh; }
-#buktiModal, #detailModal { display: none; }
-#buktiModal:not(.hidden), #detailModal:not(.hidden) { display: flex; }
-
-/* Dropdown Styling */
-.dropdown-menu {
-    z-index: 9999 !important;
-    position: absolute !important;
-    animation: dropdownFadeIn 0.2s ease-out;
-}
-
-@keyframes dropdownFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Pastikan tombol dropdown bisa diklik */
-.dropdown-trigger {
-    cursor: pointer !important;
-    position: relative !important;
-    z-index: 1 !important;
-}
-
-/* Hover effects untuk dropdown items */
-.dropdown-menu button:hover {
-    transform: translateX(5px);
-    transition: all 0.2s ease;
-}
-
-/* Rotate arrow animation */
-.dropdown-trigger svg {
-    transition: transform 0.3s ease;
-}
-</style>
+@push('scripts')
 @endpush
 @endsection

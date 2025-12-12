@@ -31,8 +31,8 @@ class Satker extends Model
         return $this->belongsTo(Pimpinan::class, 'kode_pimpinan', 'kode_pimpinan');
     }
 
-    public function personel(): HasMany
+    public function personel(): BelongsTo
     {
-        return $this->hasMany(Personel::class, 'satker_id', 'kode_satker');
+        return $this->belongsTo(Personel::class, 'satker_id', 'kode_satker');
     }
 }

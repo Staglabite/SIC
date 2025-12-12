@@ -15,19 +15,16 @@ class Pimpinan extends Authenticatable
     public $incrementing = false;
     protected $keyType = 'int';
 
-    protected $fillable = ['kode_pimpinan', 'username', 'password'];
+    protected $fillable = ['kode_pimpinan', 'nama', 'username', 'password'];
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
         'kode_pimpinan' => 'integer',
     ];
 
-    // HAPUS SELURUH FUNGSI INI!
-    // public function setPasswordAttribute($value) { ... }
-
-    public function satker(): HasMany
+    public function satker(): BelongsTo
     {
-        return $this->hasMany(Satker::class, 'kode_pimpinan', 'kode_pimpinan');
+        return $this->BelongsTo(Satker::class, 'kode_pimpinan', 'kode_pimpinan');
     }
 
     public function pengajuanIzin(): HasMany

@@ -8,33 +8,29 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('pengajuan_cuti', function (Blueprint $table) {
+        Schema::create('pengajuancuti', function (Blueprint $table) {
             $table->id();
 
-            // FK: personel_id → nrp (string) di tabel personel
             $table->string('personel_id');
 
-            // FK: renmin_id & pimpinan_id → unsignedBigInteger
             $table->unsignedBigInteger('renmin_id');
             $table->unsignedBigInteger('pimpinan_id');
 
-            // FK: kode_cuti → int di tabel cuti
             $table->integer('kode_cuti');
 
             $table->string('pengikut')->nullable();
-            $table->string('pergi_dari');
+            $table->string('pergi_dari')->nullable();
             $table->date('mulai_tgl');
             $table->date('sampai_tgl');
-            $table->string('tujuan');
-            $table->string('transportasi');
+            $table->string('tujuan')->nullable();
+            $table->string('transportasi')->nullable();
             $table->text('catatan')->nullable();
             $table->string('namaFile_bukti')->nullable();
             $table->string('pathFile_bukti')->nullable();
-            $table->string('status')->default('Proses'); // pending, disetujui, ditolak
+            $table->string('status')->default('Proses');
 
             $table->timestamps();
 
-            // FOREIGN KEYS YANG BENAR (NO ERROR 150!)
             $table->foreign('personel_id')
                   ->references('nrp')
                   ->on('personel')

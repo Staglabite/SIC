@@ -12,7 +12,7 @@ class Cuti extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['jenis_cuti', 'deskripsi'];
+    protected $fillable = ['jenis_cuti', 'deskripsi', 'jatah'];
 
     public function pengajuanCutis(): HasMany
     {

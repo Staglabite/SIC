@@ -22,12 +22,9 @@ class Renmin extends Authenticatable
         'kode_renmin' => 'integer',
     ];
 
-    // HAPUS SELURUH FUNGSI INI! → BIAR TIDAK HASH 2 KALI
-    // public function setPasswordAttribute($value) { ... }
-
-    public function satker(): HasMany
+    public function satker(): BelongsTo
     {
-        return $this->hasMany(Satker::class, 'kode_renmin', 'kode_renmin');
+        return $this->BelongsTo(Satker::class, 'kode_renmin', 'kode_renmin');
     }
 
     public function pengajuanIzin(): HasMany

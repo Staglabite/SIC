@@ -12,71 +12,113 @@ class RenminController extends Controller
     // === DASHBOARD RENMIN (tidak diubah banyak) ===
     public function dashboard()
     {
-        $total_cuti = DB::table('pengajuan_cuti')->count();
-        $total_izin = DB::table('pengajuanizin')->count();
-        $total_tahun_ini = DB::table('pengajuan_cuti')
-                    ->whereYear('created_at', 2025)
-                    ->count() + DB::table('pengajuanizin')
-                    ->whereYear('created_at', 2025)
-                    ->count();
-        $belum_divalidasi = DB::table('pengajuan_cuti')
-                    ->where('status', 'Proses')
-                    ->count() + DB::table('pengajuanizin')
-                    ->where('status', 'Proses')
-                    ->count();
+        // Ambil kode satker renmin login
+        $kodeSatker = auth()->user()->kode_satker;
 
+        // TOTAL CUTI
+        $total_cuti = DB::table('pengajuancuti')
+            ->leftJoin('personel', 'pengajuancuti.personel_id', '=', 'personel.nrp')
+            ->where('personel.kode_satker', $kodeSatker)
+            ->count();
+
+        // TOTAL IZIN
+        $total_izin = DB::table('pengajuanizin')
+            ->leftJoin('personel', 'pengajuanizin.personel_id', '=', 'personel.nrp')
+            ->where('personel.kode_satker', $kodeSatker)
+            ->count();
+
+        // TOTAL TAHUN INI
+        $total_tahun_ini = 
+            DB::table('pengajuancuti')
+                ->leftJoin('personel', 'pengajuancuti.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->whereYear('pengajuancuti.created_at', 2025)
+                ->count()
+            +
+            DB::table('pengajuanizin')
+                ->leftJoin('personel', 'pengajuanizin.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->whereYear('pengajuanizin.created_at', 2025)
+                ->count();
+
+        // BELUM DIVALIDASI
+        $belum_divalidasi =
+            DB::table('pengajuancuti')
+                ->leftJoin('personel', 'pengajuancuti.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->where('pengajuancuti.status', 'Proses')
+                ->count()
+            +
+            DB::table('pengajuanizin')
+                ->leftJoin('personel', 'pengajuanizin.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->where('pengajuanizin.status', 'Proses')
+                ->count();
+
+        // DATA BULANAN
         $bulanan_cuti = [];
         $bulanan_izin = [];
+
         for ($m = 1; $m <= 12; $m++) {
-            $bulanan_cuti[] = DB::table('pengajuan_cuti')
-                            ->whereYear('created_at', 2025)
-                            ->whereMonth('created_at', $m)
-                            ->count();
+            $bulanan_cuti[] = DB::table('pengajuancuti')
+                ->leftJoin('personel', 'pengajuancuti.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->whereYear('pengajuancuti.created_at', 2025)
+                ->whereMonth('pengajuancuti.created_at', $m)
+                ->count();
+
             $bulanan_izin[] = DB::table('pengajuanizin')
-                            ->whereYear('created_at', 2025)
-                            ->whereMonth('created_at', $m)
-                            ->count();
+                ->leftJoin('personel', 'pengajuanizin.personel_id', '=', 'personel.nrp')
+                ->where('personel.kode_satker', $kodeSatker)
+                ->whereYear('pengajuanizin.created_at', 2025)
+                ->whereMonth('pengajuanizin.created_at', $m)
+                ->count();
         }
 
         $stats = compact('total_cuti', 'total_izin', 'total_tahun_ini', 'belum_divalidasi', 'bulanan_cuti', 'bulanan_izin');
+
         return view('dashboard.renmin', compact('stats'));
     }
+
 
     // === VALIDASI PENGAJUAN – YANG DIPERBAIKI TOTAL ===
     public function validasi()
     {
-        // Query CUTI
-        $cuti = DB::table('pengajuan_cuti')
-            ->leftJoin('cuti', 'pengajuan_cuti.kode_cuti', '=', 'cuti.kode_cuti')
-            ->leftJoin('personel', 'pengajuan_cuti.personel_id', '=', 'personel.nrp')
+        // ambil kode satker renmin yang login
+        $kodeSatker = auth()->user()->kode_satker;
+
+        // Query CUTI (dipilah berdasarkan satker personel)
+        $cuti = DB::table('pengajuancuti')
+            ->leftJoin('cuti', 'pengajuancuti.kode_cuti', '=', 'cuti.kode_cuti')
+            ->leftJoin('personel', 'pengajuancuti.personel_id', '=', 'personel.nrp')
+            ->where('personel.kode_satker', $kodeSatker)            // ⬅ FILTER WAJIB
             ->select([
-                'pengajuan_cuti.id',
+                'pengajuancuti.id',
                 DB::raw("'cuti' as jenis"),
                 'cuti.jenis_cuti as nama_jenis',
-                'pengajuan_cuti.catatan as keterangan',
-                'pengajuan_cuti.tujuan',
-                'pengajuan_cuti.pergi_dari',
-                'pengajuan_cuti.transportasi',
-                'pengajuan_cuti.pengikut',
-                'pengajuan_cuti.catatan as catatan',               // catatan tambahan
-                'pengajuan_cuti.mulai_tgl as tanggal_mulai',
-                'pengajuan_cuti.sampai_tgl as tanggal_selesai',
-                'pengajuan_cuti.status',
-                'pengajuan_cuti.pathFile_bukti',
-                'pengajuan_cuti.namaFile_bukti',
-                'pengajuan_cuti.created_at',
-
-                // DATA PERSONEL – WAJIB!
+                'pengajuancuti.catatan as keterangan',
+                'pengajuancuti.tujuan',
+                'pengajuancuti.pergi_dari',
+                'pengajuancuti.transportasi',
+                'pengajuancuti.pengikut',
+                'pengajuancuti.catatan as catatan',
+                'pengajuancuti.mulai_tgl as tanggal_mulai',
+                'pengajuancuti.sampai_tgl as tanggal_selesai',
+                'pengajuancuti.status',
+                'pengajuancuti.pathFile_bukti',
+                'pengajuancuti.namaFile_bukti',
+                'pengajuancuti.created_at',
                 'personel.name as nama_personel',
                 'personel.nrp',
                 'personel.pangkat',
                 'personel.jabatan',
-                'personel.golongan',                               // tambah kalau ada kolomnya
+                'personel.golongan',
             ]);
 
-        // Query IZIN
+        // Query IZIN (juga disaring berdasarkan satker)
         $izin = DB::table('pengajuanizin')
             ->leftJoin('personel', 'pengajuanizin.personel_id', '=', 'personel.nrp')
+            ->where('personel.kode_satker', $kodeSatker)            // ⬅ FILTER WAJIB
             ->select([
                 'pengajuanizin.id',
                 DB::raw("'izin' as jenis"),
@@ -86,15 +128,13 @@ class RenminController extends Controller
                 'pengajuanizin.pergi_dari',
                 'pengajuanizin.transportasi',
                 'pengajuanizin.pengikut',
-                'pengajuanizin.catatan',                           // pastikan kolom ini ADA
+                'pengajuanizin.catatan',
                 'pengajuanizin.tgl_berangkat as tanggal_mulai',
                 'pengajuanizin.tgl_kembali as tanggal_selesai',
                 'pengajuanizin.status',
                 'pengajuanizin.pathFile_bukti',
                 'pengajuanizin.namaFile_bukti',
                 'pengajuanizin.created_at',
-
-                // DATA PERSONEL – WAJIB!
                 'personel.name as nama_personel',
                 'personel.nrp',
                 'personel.pangkat',
@@ -102,10 +142,10 @@ class RenminController extends Controller
                 'personel.golongan',
             ]);
 
-        // Gabungkan & urutkan
+        // Gabungkan
         $pengajuan = $cuti->unionAll($izin)
-                          ->orderByDesc('created_at')
-                          ->get();
+                        ->orderByDesc('created_at')
+                        ->get();
 
         return view('dashboard.renminvalidasi', compact('pengajuan'));
     }
@@ -119,7 +159,7 @@ class RenminController extends Controller
             'tipe'   => 'required|in:cuti,izin'
         ]);
 
-        $table = $request->tipe === 'cuti' ? 'pengajuan_cuti' : 'pengajuanizin';
+        $table = $request->tipe === 'cuti' ? 'pengajuancuti' : 'pengajuanizin';
 
         $updated = DB::table($table)
                     ->where('id', $request->id)

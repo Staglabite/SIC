@@ -3,6 +3,25 @@
 
 @section('title', 'Dashboard Personel')
 @section('content')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<style>
+    .dataTables_filter, 
+    .dataTables_length {
+        margin: 0 0 20px 0; /* bawah 20px */
+    }
+
+    .dataTables_info, 
+    .dataTables_paginate {
+        margin: 20px 0 0 0; /* atas 20px */
+    }
+
+    .dataTables_wrapper .text-center {
+        text-align: center !important;
+    }
+
+</style>
 
 <div class="min-h-screen bg-white py-2">
     <div class="max-w-7xl mx-auto px-4">
@@ -17,43 +36,41 @@
                 </h2>
 
                 <a href="{{ route('personel.pengajuan.create') }}" 
-                   class="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-700 
-                   hover:from-green-700 hover:to-emerald-800 text-white px-5 py-2 rounded-md shadow text-l">
+                   class="inline-flex items-center gap-2 bg-yellow-900
+                   hover:bg-yellow-950 text-white px-5 py-2 rounded-md shadow text-l">
                     <i class="fas fa-plus-circle"></i> Ajukan Cuti / Izin Baru
                 </a>
             </div>
 
             @if($riwayat->count() > 0)
             <div class="p-8 overflow-x-auto">
-                <table class="min-w-full divide-y">
-                    <thead class="bg-gray-200 ">
+                <table id="riwayatTable" class="min-w-full leading-normal">
+                    <thead class="bg-gray-100 ">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">No</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Jenis</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Keperluan</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Periode</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Status</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Bukti</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-black">Aksi</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-black">No</th>
+                            <th class="px-10 text-left text-xs font-bold text-black">Jenis</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-black">Tanggal</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-black">Status</th>
+                            <th class="px-10 py-4 text-left text-xs font-bold text-black">Aksi</th>
                         </tr>
                     </thead>
 
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-200 ">
                         @foreach($riwayat as $i => $r)
                         <tr class="hover:bg-indigo-50 transition">
 
-                            <td class="px-6 py-4 text-sm font-medium">{{ $i + 1 }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-center">{{ $i + 1 }}</td>
 
-                            <td class="px-6 py-4">
+                            <td class="px-5">
                                 <span class="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap 
                                     {{ $r->jenis == 'cuti' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                     {{ strtoupper($r->nama_jenis) }}
                                 </span>
                             </td>
 
-                            <td class="px-6 py-4 text-sm">{{ $r->keterangan ?? '-' }}</td>
 
-                            <td class="px-6 py-4 text-sm whitespace-nowrap">
+
+                            <td class="px-6 py-4 text-sm whitespace-nowrap text-center">
                                 {{ \Carbon\Carbon::parse($r->tanggal_mulai)->format('d M Y') }}
                                 @if($r->tanggal_selesai)
                                     → {{ \Carbon\Carbon::parse($r->tanggal_selesai)->format('d M Y') }}
@@ -61,57 +78,46 @@
                             </td>
 
                             <!-- STATUS -->
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php
-                                    $status = strtolower($r->status);
-                                    $bg = match($status) {
-                                        'tervalidasi' => 'bg-emerald-100 text-emerald-800',
-                                        'proses'      => 'bg-amber-100 text-amber-800',
-                                        'ditolak'     => 'bg-red-100 text-red-800',
-                                        default       => 'bg-orange-100 text-orange-800'
-                                    };
-                                @endphp
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            @php
+                                $status = strtolower($r->status);
+                                $bg = match($status) {
+                                    'tervalidasi', 'disetujui' => 'bg-emerald-100 text-emerald-800',
+                                    'proses'      => 'bg-amber-100 text-amber-800',
+                                    'ditolak'     => 'bg-red-100 text-red-800',
+                                    default       => 'bg-orange-100 text-orange-800'
+                                };
+                            @endphp
                                 <span class="px-4 py-2 rounded-full text-xs font-bold {{ $bg }}">
                                     {{ ucwords($status) }}
                                 </span>
                             </td>
 
-                            <!-- BUKTI -->
-                            <td class="px-6 py-4 text-center">
-                                @if($r->pathFile_bukti)
-                                    <button 
-                                        onclick="openBuktiModal('{{ asset('storage/' . $r->pathFile_bukti) }}', '{{ $r->namaFile_bukti ?? 'Bukti' }}')" 
-                                        class="text-indigo-700 hover:text-indigo-900 font-bold text-xs">
-                                        <i class="fas fa-paperclip"></i> Lihat
-                                    </button>
-                                @else
-                                    <span class="text-gray-400 italic text-xs">- tidak ada -</span>
-                                @endif
-                            </td>
-
                             {{-- Aksi --}}
-                            <td class="px-6 py-4 text-center space-y-2 whitespace-nowrap">
-                                @if($r->status == 'Tidak Valid' || $r->status == 'Proses')   {{-- tambah Proses kalau mau bisa edit saat masih diproses --}}
-                                    <button onclick="openEditModal({{ $r->id }}, JSON.parse(atob('{{ base64_encode(json_encode($r)) }}')))"
-                                            class="block bg-yellow-600 hover:bg-yellow-700 text-white font-bold text-xs px-4 py-2 rounded w-full">
-                                        <i class="fas fa-edit"></i> EDIT
-                                    </button>
-
-                                    @if($r->status == 'Tidak Valid')
-                                        <button onclick="kirimUlang({{ $r->id }}, '{{ $r->jenis }}')" 
-                                                class="block bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded w-full">
-                                            KIRIM ULANG
-                                        </button>
-                                    @endif
-
-                                @else
+                            {{-- Aksi --}}
+                            <td class="px-6 py-4 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center space-x-2">
                                     <button 
                                         class="bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs px-6 py-2 rounded"
                                         onclick="openDetailModal(JSON.parse(atob(this.dataset.detail)))"
                                         data-detail="{{ base64_encode(json_encode($r)) }}">
                                         Details
                                     </button>
-                                @endif
+                                    
+                                    @if($r->status == 'Tidak Valid' || $r->status == 'Proses')
+                                        <button onclick="openEditModal({{ $r->id }}, JSON.parse(atob('{{ base64_encode(json_encode($r)) }}')))"
+                                                class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold text-xs px-6 py-2 rounded">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+
+                                        @if($r->status == 'Tidak Valid')
+                                            <button onclick="kirimUlang({{ $r->id }}, '{{ $r->jenis }}')" 
+                                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded">
+                                                Kirim Ulang
+                                            </button>
+                                        @endif
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         @endforeach
@@ -132,9 +138,9 @@
         <div id="editModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 p-4" 
             onclick="if(event.target === this) closeEditModal()">
             <div class="bg-white rounded-3xl shadow-3xl max-w-5xl w-full max-h-screen overflow-y-auto">
-                <div class="bg-gradient-to-r from-yellow-600 to-orange-600 p-6 text-white rounded-t-3xl">
+                <div class="bg-white p-6 text-black rounded-t-3xl">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-3xl font-bold">EDIT PENGAJUAN</h3>
+                        <h3 class="text-3xl font-bold">Edit Pengajuan</h3>
                         <button onclick="closeEditModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-3">
                             <i class="fas fa-times text-3xl"></i>
                         </button>
@@ -148,56 +154,58 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Jenis Pengajuan</label>
-                            <input type="text" id="editJenisDisplay" class="w-full px-4 py-3 border rounded-lg bg-gray-100" disabled>
+                            <label class="block text-black font-bold mb-2">Jenis Pengajuan</label>
+                            <input type="text" id="editJenisDisplay" class="w-full px-3 py-2 border rounded-lg bg-gray-100" disabled>
                         </div>
-                        <div>
-                            <label class="block text-gray-700 font-bold mb-2">Keperluan</label>
-                            <textarea name="keterangan" id="editKeterangan" rows="3" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-500" required></textarea>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                            <label class="block text-gray-700 font-bold mb-2">Tanggal Mulai</label>
-                            <input type="date" name="tanggal_mulai" id="editTglMulai" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-gray-700 font-bold mb-2">Tanggal Selesai</label>
-                            <input type="date" name="tanggal_selesai" id="editTglSelesai" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-yellow-500">
+                        <div id="keperluanWrapper">
+                                <label class="block text-black font-bold mb-2">Keperluan</label>
+                                <textarea name="keterangan" id="editKeterangan" rows="3" 
+                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500"></textarea>
+                                <small class="text-gray-500">Wajib diisi untuk izin, tidak diperlukan untuk cuti</small>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Pergi Dari</label>
-                            <input type="text" name="pergi_dari" id="editPergiDari" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="block text-black font-bold mb-2">Tanggal Mulai</label>
+                            <input type="date" name="tanggal_mulai" id="editTglMulai" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500" required>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Tujuan</label>
-                            <input type="text" name="tujuan" id="editTujuan" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="block text-black font-bold mb-2">Tanggal Selesai</label>
+                            <input type="date" name="tanggal_selesai" id="editTglSelesai" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-yellow-500">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Transportasi</label>
-                            <input type="text" name="transportasi" id="editTransportasi" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="block text-black font-bold mb-2">Pergi Dari</label>
+                            <input type="text" name="pergi_dari" id="editPergiDari" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Pengikut</label>
-                            <input type="text" name="pengikut" id="editPengikut" class="w-full px-4 py-3 border rounded-lg">
+                            <label class="block text-black font-bold mb-2">Tujuan</label>
+                            <input type="text" name="tujuan" id="editTujuan" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-black font-bold mb-2">Transportasi</label>
+                            <input type="text" name="transportasi" id="editTransportasi" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-black font-bold mb-2">Pengikut</label>
+                            <input type="text" name="pengikut" id="editPengikut" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-gray-700 font-bold mb-2">Catatan Tambahan</label>
-                        <textarea name="catatan" id="editCatatan" rows="3" class="w-full px-4 py-3 border rounded-lg"></textarea>
+                        <label class="block text-black font-bold mb-2">Catatan Tambahan</label>
+                        <textarea name="catatan" id="editCatatan" rows="1" class="w-full px-3 py-2 border rounded-lg"></textarea>
                     </div>
 
                     <div class="mb-6">
-                        <label class="block text-gray-700 font-bold mb-2">Bukti Pendukung (biarkan kosong jika tidak ingin ganti)</label>
-                        <input type="file" name="file_bukti" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-4 py-3 border rounded-lg">
+                        <label class="block text-black font-bold mb-2">Bukti Pendukung</label>
+                        <input type="file" name="file_bukti" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 border rounded-lg">
                         <small class="text-gray-500">File lama tetap digunakan jika tidak upload baru.</small>
                     </div>
 
@@ -207,7 +215,7 @@
                             Batal
                         </button>
                         <button type="submit" 
-                                class="px-8 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-bold rounded-lg shadow-lg">
+                                class="px-8 py-3 bg-yellow-900 hover:bg-yellow-950 text-white font-bold rounded-lg shadow-lg">
                             <i class="fas fa-save"></i> Simpan Perubahan
                         </button>
                     </div>
@@ -215,92 +223,124 @@
             </div>
         </div>
 
-        {{-- MODAL BUKTI – LANGSUNG DI SINI (TIDAK PAKAI @include) --}}
-        <div id="buktiModal" class="fixed inset-0 bg-black bg-opacity-75 hidden flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeBuktiModal()">
-            <div class="bg-white rounded-2xl shadow-3xl w-full max-w-3xl max-h-95vh overflow-hidden">
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white flex justify-between items-center">
-                    <h3 class="text-lg font-bold flex items-center gap-2"><i class="fas fa-file-alt"></i> <span id="modalTitle">Bukti</span></h3>
-                    <button onclick="closeBuktiModal()" class="hover:bg-white hover:bg-opacity-20 rounded-full p-2"><i class="fas fa-times text-xl"></i></button>
-                </div>
-                <div class="bg-gray-50 p-4">
-                    <div class="relative w-full h-96 bg-white rounded-xl overflow-hidden border-4 border-indigo-100">
-                        <iframe id="buktiFrame" class="absolute inset-0 w-full h-full" src="" frameborder="0"></iframe>
-                        <img id="buktiImage" src="" class="hidden absolute inset-0 w-full h-full object-contain" alt="Bukti">
-                    </div>
-                    <div class="mt-4 text-center">
-                        <a id="downloadLink" href="#" download class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-lg shadow-lg">
-                            <i class="fas fa-download"></i> Download
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        {{-- MODAL DETAILS – LANGSUNG DI SINI --}}
-        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeDetailModal()">
-            <div class="bg-white rounded-3xl shadow-3xl max-w-4xl w-full max-h-screen overflow-y-auto">
-                <div class="bg-white p-8 text-black rounded-t-3xl">
-                    <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-6">
-                            <div class="bg-gray-200 rounded-full p-5 shadow-2xl">
-                                <i class="fas fa-paper-plane text-blue-600 text-5xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-4xl font-bold" id="modalJenisTitle">DETAIL PENGAJUAN</h3
-                            </div>
+        {{-- MODAL DETAIL – VERSI FINAL TERBARU --}}
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center z-50 p-4"
+            onclick="if(event.target === this) closeDetailModal()">
+            <div class="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-y-auto">
+
+                <!-- Header + Status Badge di Kanan Atas -->
+                <div class="bg-gray-100 px-8 py-5 flex justify-between items-center border-b">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-800">Detail Pengajuan</h3>
+                        <p class="text-sm text-gray-600">Informasi lengkap izin/cuti personel</p>
+                    </div>
+                    <div class="flex items-center gap-6">
+                        <!-- STATUS BADGE DI HEADER -->
+                        <div class="text-right">
+                            <span id="modalStatusBadge" 
+                                class="inline-block px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider border mt-1">
+                                Menunggu
+                            </span>
                         </div>
-                        <button onclick="closeDetailModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-4 transition">
-                            <i class="fas fa-times text-3xl"></i>
+                        <button onclick="closeDetailModal()" class="text-gray-500 hover:text-gray-700 transition">
+                            <i class="fas fa-times text-2xl"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="p-10 bg-gray-50">
-                    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-l-8 border-gray-200">
-                        <h4 class="text-2xl font-bold text-black mb-4 flex items-center gap-3">
-                            <i class="fas fa-user-tie text-blue-600"></i> Identitas Personel
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
-                            <div><p class="text-gray-600">Nama</p><p id="modalNama" class="font-semibold text-xl text-black">-</p></div>
-                            <div><p class="text-gray-600">NRP</p><p id="modalNrp" class="font-semibold text-xl text-black">-</p></div>
-                            <div><p class="text-gray-600">Pangkat</p><p id="modalPangkat" class="font-semibold">-</p></div>
-                            <div><p class="text-gray-600">Jabatan</p><p id="modalJabatan" class="font-semibold text-black">-</p></div>
-                            <div><p class="text-gray-600">Golongan</p><p id="modalGolongan" class="font-semibold text-black">-</p></div>
+                <!-- Body -->
+                <div class="p-8 bg-gray-50">
+
+                    <!-- 3 Kolom Utama -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-sm mb-10">
+                        <!-- Kolom 1 -->
+                        <div class="space-y-5">
+                            <div><span class="font-bold text-black">Nama Lengkap</span></div>
+                            <div id="modalNama" class="text-black">-</div>
+                            <div><span class="font-bold text-black">NRP</span></div>
+                            <div id="modalNrp" class=" text-black">-</div>
+                            <div><span class="font-bold text-black">Pangkat</span></div>
+                            <div id="modalPangkat" class="text-black">-</div>
+                            <div><span class="font-bold text-black">Golongan</span></div>
+                            <div id="modalGolongan" class="text-black">-</div>
+                        </div>
+
+                        <!-- Kolom 2 -->
+                        <div class="space-y-5">
+                            <div><span class="font-bold text-black">Jenis</span></div>
+                            <div id="modalJenis" class="text-black">-</div>
+                            <div><span class="font-bold text-black">Mulai</span></div>
+                            <div id="modalTglMulai" class=" text-black">-</div>
+                            <div><span class="font-bold text-black">Dari</span></div>
+                            <div id="modalPergiDari" class="text-black">-</div>
+                            <div><span class="font-bold text-black">Transportasi</span></div>
+                            <div id="modalTransportasi" class="text-black">-</div>
+                        </div>
+
+                        <!-- Kolom 3 -->
+                        <div class="space-y-5">
+                            <div><span class="font-bold text-black">Lama</span></div>
+                            <div id="modalLama" class="text-gray-700">-</div>
+                            <div><span class="font-bold text-black">Selesai</span></div>
+                            <div id="modalTglSelesai" class="text-black">-</div>
+                            <div><span class="font-bold text-black">Tujuan</span></div>
+                            <div id="modalTujuan" class="text-black">-</div>
+                            <div><span class="font-bold text-black">Pengikut</span></div>
+                            <div id="modalPengikut" class="text-black">-</div>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-xl p-8 border-l-8 border-gray-200">
-                        <h4 class="text-2xl font-bold text-black mb-6 flex items-center gap-3">
-                            <i class="fas fa-file-alt text-blue-600"></i> DETAIL PENGAJUAN
-                        </h4>
-                        <div class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div><p class="text-gray-600 font-medium">Jenis</p><p id="modalJenis" class="text-xl font-semibold text-black">-</p></div>
-                                <div><p class="text-gray-600 font-medium">Keperluan</p><p id="modalKeperluan" class="text-xl font-semibold">-</p></div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-l-4 border-green-600">
-                                    <p class="text-sm text-gray-600">Mulai</p><p id="modalTglMulai" class="text-xl font-bold text-black">-</p>
+                    <!-- BUKTI PENDUKUNG + KEPERLUAN (BERDAMPINGAN) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+
+                        <!-- Bukti Pendukung (kiri) -->
+                        <div>
+                            <h4 class="font-bold text-black mb-3 text-base">Bukti Pendukung</h4>
+                            <div class="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-3 hover:shadow-sm transition-shadow">
+                                <div class="text-gray-400 flex-shrink-0">
+                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" 
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
                                 </div>
-                                <div class="bg-gradient-to-r from-red-50 to-rose-50 p-5 rounded-xl border-l-4 border-red-600">
-                                    <p class="text-sm text-gray-600">Selesai</p><p id="modalTglSelesai" class="text-xl font-bold text-black">-</p>
+                                <div class="flex-1 min-w-0">
+                                    <div id="buktiFileName" class="font-medium text-gray-800 text-sm truncate">
+                                        Tidak ada bukti
+                                    </div>
+                                    <div id="buktiLinkContainer" class="text-xs text-yellow-900 font-medium cursor-pointer hover:underline mt-0.5">
+                                        Lihat File
+                                    </div>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div><p class="text-gray-600 font-medium">Dari</p><p id="modalPergiDari" class="font-semibold">-</p></div>
-                                <div><p class="text-gray-600 font-medium">Tujuan</p><p id="modalTujuan" class="font-semibold text-black">-</p></div>
+                        </div>
+
+                        <!-- Keperluan (kanan) -->
+                        <div>
+                            <h4 class="font-bold text-black mb-3 text-base">Keperluan</h4>
+                            <div class="bg-gray-50 border-2 border-gray-200 rounded-xl p-4 text-gray-700">
+                                <p id="modalKeperluan" class="italic leading-relaxed min-h-[40px] text-sm">
+                                    Tidak ada keterangan
+                                </p>
                             </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div><p class="text-gray-600 font-medium">Transportasi</p><p id="modalTransportasi" class="font-semibold">-</p></div>
-                                <div><p class="text-gray-600 font-medium">Pengikut</p><p id="modalPengikut" class="font-semibold text-black">-</p></div>
-                            </div>
-                            <div class="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-400">
-                                <p class="text-gray-700 font-medium mb-2">Catatan</p>
-                                <p id="modalCatatan" class="italic text-gray-800">Tidak ada catatan</p>
-                            </div>
-                            <div class="text-right pt-6 border-t">
-                                <p class="text-sm text-gray-500">Dibuat: <span id="modalCreatedAt" class="font-bold text-indigo-700">-</span></p>
-                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-sm text-gray-500 text-left sm:text-right w-full sm:w-auto">
+                        Diajukan pada: <span id="modalCreatedAt" class="font-bold text-yellow-900">-</span>
+                    </div>
+
+                    <!-- Footer: Tombol Aksi di KIRI, Close di KANAN -->
+                    <div class="pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <!-- Kiri: aksi (Download Surat dll) -->
+                        <div id="aksiFooterContainer" class="flex gap-3"></div>
+
+                        <!-- Kanan: tombol Tutup -->
+                        <div class="flex gap-3">
+                            <button type="button" onclick="closeDetailModal()"
+                                    class="px-8 py-3 bg-white text-black font-bold border-1 hover:bg-gray-200 rounded-lg shadow transition">
+                                <i class="fas fa-times mr-2"></i> Tutup
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -308,21 +348,47 @@
         </div>
 
         <script>
+        
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-detail');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const data = JSON.parse(atob(btn.dataset.detail));
+                openDetailModal(data);
+            }
+        });
+
         function openEditModal(id, data) {
-            // Isi form
+            // Isi form seperti biasa
             document.getElementById('editId').value = id;
-            document.getElementById('editJenisDisplay').value = data.nama_jenis || data.jenis;
-            document.getElementById('editKeterangan').value = data.keterangan || '';
-            document.getElementById('editTglMulai').value = data.tanggal_mulai || '';
-            document.getElementById('editTglSelesai').value = data.tanggal_selesai || '';
-            document.getElementById('editPergiDari').value = data.pergi_dari || '';
-            document.getElementById('editTujuan').value = data.tujuan || '';
+            document.getElementById('editJenisDisplay').value = data.nama_jenis || data.jenis || '';
+
+            document.getElementById('editKeterangan').value   = data.keterangan   || '';
+            document.getElementById('editTglMulai').value    = data.tanggal_mulai || '';
+            document.getElementById('editTglSelesai').value  = data.tanggal_selesai || '';
+            document.getElementById('editPergiDari').value   = data.pergi_dari   || '';
+            document.getElementById('editTujuan').value      = data.tujuan       || '';
             document.getElementById('editTransportasi').value = data.transportasi || '';
-            document.getElementById('editPengikut').value = data.pengikut || '';
-            document.getElementById('editCatatan').value = data.catatan || '';
+            document.getElementById('editPengikut').value    = data.pengikut     || '';
+            document.getElementById('editCatatan').value     = data.catatan      || '';
 
             // Set action form
             document.getElementById('editForm').action = `/dashboard/personel/pengajuan/${id}`;
+
+            // === LOGIKA HIDE KOLOM KEPERLUAN JIKA CUTI ===
+            const jenis = (data.jenis || '').toLowerCase().trim();
+            const keperluanWrapper = document.getElementById('keperluanWrapper');
+            const keteranganField  = document.getElementById('editKeterangan');
+
+            if (jenis === 'cuti') {
+                keperluanWrapper.style.display = 'none';   // sembunyikan seluruh kolom
+                keteranganField.removeAttribute('required'); // hapus required (jika ada)
+                keteranganField.value = '';                 // kosongkan (opsional)
+            } else {
+                keperluanWrapper.style.display = 'block';  // atau 'grid' kalau pakai grid
+                keteranganField.setAttribute('required', 'required');
+            }
 
             // Tampilkan modal
             document.getElementById('editModal').classList.remove('hidden');
@@ -386,25 +452,120 @@
         }
 
         function openDetailModal(data) {
+            // Isi semua field (sama seperti sebelumnya)
             document.getElementById('modalNama').textContent = data.nama_personel || '-';
             document.getElementById('modalNrp').textContent = data.nrp || '-';
             document.getElementById('modalPangkat').textContent = data.pangkat || '-';
-            document.getElementById('modalJabatan').textContent = data.jabatan || '-';
-            document.getElementById('modalGolongan').textContent = data.golongan || '-'; // ← BARU
-
-            document.getElementById('modalJenisTitle').textContent = data.jenis === 'cuti' ? 'Detail Cuti' : 'Detail Izin';
-            document.getElementById('modalJenis').textContent = data.nama_jenis || '-';
-            document.getElementById('modalKeperluan').textContent = data.keterangan || '-';
+            document.getElementById('modalGolongan').textContent = data.golongan || '-';
+            document.getElementById('modalJenis').textContent = (data.nama_jenis || data.jenis?.toUpperCase()) || '-';
+            document.getElementById('modalKeperluan').textContent = data.keterangan || 'Tidak ada keterangan';
             document.getElementById('modalTglMulai').textContent = formatDate(data.tanggal_mulai);
             document.getElementById('modalTglSelesai').textContent = data.tanggal_selesai ? formatDate(data.tanggal_selesai) : '-';
-            
+
+            const lama = data.tanggal_selesai 
+                ? Math.ceil((new Date(data.tanggal_selesai) - new Date(data.tanggal_mulai)) / 86400000) + 1 
+                : 1;
+            document.getElementById('modalLama').textContent = lama + ' Hari';
+
             document.getElementById('modalPergiDari').textContent = data.pergi_dari || '-';
             document.getElementById('modalTujuan').textContent = data.tujuan || '-';
             document.getElementById('modalTransportasi').textContent = data.transportasi || '-';
             document.getElementById('modalPengikut').textContent = data.pengikut || '-';
-            document.getElementById('modalCatatan').textContent = data.catatan || 'Tidak ada catatan';
-            
             document.getElementById('modalCreatedAt').textContent = new Date(data.created_at).toLocaleString('id-ID');
+
+            // Status badge
+            const badge = document.getElementById('modalStatusBadge');
+            const statusText = data.status === 'Proses' ? 'Menunggu' : data.status.toUpperCase();
+            badge.textContent = statusText;
+            badge.className = 'inline-block px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider border';
+            if (['Disetujui', 'Tervalidasi'].includes(data.status)) {
+                badge.classList.add('bg-emerald-100', 'text-emerald-800', 'border-emerald-300');
+            } else if (data.status === 'Ditolak') {
+                badge.classList.add('bg-red-100', 'text-red-800', 'border-red-300');
+            } else if (data.status === 'Tidak Valid') {
+                badge.classList.add('bg-orange-100', 'text-orange-800', 'border-orange-300');
+            } else {
+                badge.classList.add('bg-amber-100', 'text-amber-800', 'border-amber-300');
+            }
+
+            // Bukti
+            const buktiFileName = document.getElementById('buktiFileName');
+            const buktiLink = document.getElementById('buktiLinkContainer');
+            if (data.pathFile_bukti) {
+                const url = `/storage/${data.pathFile_bukti}`;
+                buktiFileName.textContent = data.namaFile_bukti || 'File Bukti';
+                buktiLink.innerHTML = 'Lihat File';
+                buktiLink.onclick = () => window.open(url, '_blank');
+            } else {
+                buktiFileName.textContent = 'Tidak ada bukti';
+                buktiLink.innerHTML = '';
+            }
+
+            // FOOTER: TOMBOL DOWNLOAD SURAT (PAKAI FETCH AGAR TIDAK DOWNLOAD HTML)
+            // === TOMBOL DOWNLOAD SURAT – VERSI YANG BENAR-BENAR JALAN ===
+            const container = document.getElementById('aksiFooterContainer');
+            container.innerHTML = '';
+
+            if (data.status === 'Disetujui') {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'inline-flex items-center gap-3 bg-yellow-900 hover:bg-yellow-950 text-white font-bold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition text-lg';
+                btn.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download Surat
+                `;
+
+                btn.onclick = async function () {
+                    btn.disabled = true;
+                    btn.innerHTML = '⏳ Memproses...';
+                    
+                    try {
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                        
+                        const response = await fetch(`/dashboard/personel/surat/download/${data.id}`, {
+                            method: 'GET',
+                            credentials: 'same-origin', // INI PENTING
+                            headers: {
+                                'Accept': 'application/pdf',
+                                'X-CSRF-TOKEN': csrfToken
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            alert('Error: ' + errorText);
+                            return;
+                        }
+                        
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Surat_${data.jenis}_${data.nrp}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                        
+                    } catch (err) {
+                        alert('Error: ' + err.message);
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Download Surat Resmi';
+                    }
+                };
+
+                container.appendChild(btn);
+
+            } else if (data.status === 'Proses' || data.status === 'Tidak Valid') {
+                container.innerHTML = '<span class="text-amber-600 font-bold text-lg"></span>';
+            } else if (data.status === 'Ditolak') {
+                container.innerHTML = '<span class="text-red-600 font-bold text-lg"></span>';
+            }
+
+            // Buka modal
             document.getElementById('detailModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
@@ -424,6 +585,36 @@
             .then(r => r.json())
             .then(res => { if(res.success) { alert('Berhasil dikirim ulang!'); location.reload(); } });
         }
+
+        $(document).ready(function () {
+            $('#riwayatTable').DataTable({
+                pageLength: 25,
+                lengthMenu: [[25, 50, 100], [25, 50, 100]],
+                language: {
+                    "sEmptyTable":     "Tidak ada data yang tersedia pada tabel",
+                    "sProcessing":     "Sedang memproses...",
+                    "sLengthMenu":     "Tampilkan _MENU_ data",
+                    "sZeroRecords":    "Tidak ditemukan data yang sesuai",
+                    "sInfo":           "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    "sInfoEmpty":      "Menampilkan 0 sampai 0 dari 0 data",
+                    "sInfoFiltered":   "(disaring dari _MAX_ data keseluruhan)",
+                    "sSearch":         "",
+                    "sSearchPlaceholder": "Ketik untuk mencari...",
+                    "oPaginate": {
+                        "sFirst":    "<<",
+                        "sPrevious": "<",
+                        "sNext":     ">",
+                        "sLast":     ">>"
+                    }
+                },
+
+                // 🟨 Center khusus kolom No & Tanggal 🟨
+                columnDefs: [
+                    { className: "text-center", targets: [0, 2] }
+                ]
+            });
+        });
+
         </script>
     </div>
 </div>

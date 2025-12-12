@@ -11,10 +11,8 @@ return new class extends Migration
         Schema::create('pengajuanizin', function (Blueprint $table) {
             $table->id();
 
-            // FIX 1: personel_id → string (sama dengan nrp)
             $table->string('personel_id');
 
-            // FIX 2: renmin_id & pimpinan_id → unsignedBigInteger
             $table->unsignedBigInteger('renmin_id');
             $table->unsignedBigInteger('pimpinan_id');
 
@@ -26,14 +24,13 @@ return new class extends Migration
             $table->date('tgl_berangkat');
             $table->date('tgl_kembali');
             $table->string('transportasi');
-            $table->text('catatan')->nullable();
+            $table->text('catatan', 50)->nullable();
             $table->string('namaFile_bukti');
             $table->string('pathFile_bukti');
             $table->string('status')->default('Proses');
 
             $table->timestamps();
 
-            // FOREIGN KEY YANG BENAR
             $table->foreign('personel_id')
                   ->references('nrp')
                   ->on('personel')

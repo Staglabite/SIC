@@ -11,6 +11,9 @@ return new class extends Migration
         Schema::create('pimpinan', function (Blueprint $table) {
             $table->unsignedBigInteger('kode_pimpinan')->primary();
             $table->unsignedBigInteger('kode_satker');
+            $table->string('nama');
+            $table->string('nrp',8);
+            $table->string('jabatan');
             $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();

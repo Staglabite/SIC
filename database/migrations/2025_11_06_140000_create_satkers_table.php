@@ -9,10 +9,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('satker', function (Blueprint $table) {
-            $table->bigIncrements('kode_satker'); // atau integer() + primary() jika mau int biasa
+            $table->unsignedBigInteger('kode_satker')->primary();
             $table->string('name');
             $table->text('deskripsi')->nullable();
-
             $table->timestamps();
         });
     }
