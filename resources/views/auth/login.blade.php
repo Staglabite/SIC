@@ -16,8 +16,10 @@
                 <div class="flex justify-center mb-4">
                     <img src="/storage/LogoPolda.png" alt="Logo Polda" class="h-20">
                 </div>
-                <h1 class="text-5xl font-bold text-yellow-900 mb-2">SIC</h1>
-                <p class="text-gray-600 text-lg">Sistem Izin & Cuti Polda Jawa Tengah</p>
+                <p class="text-black text-xl font-bold">Selamat Datang</p>
+                <!-- <h1 class="text-4xl font-bold text-yellow-900 mb-2">SIC</h1> -->
+                <h1 class="text-black text-xl font-bold">di Aplikasi SIC Polda Jawa Tengah</h1>
+
             </div>
 
             <form method="POST" action="{{ route('login') }}" class="space-y-6 fade-in" style="animation-delay:0.4s">
@@ -53,7 +55,7 @@
             </form>
 
             <p class="text-center text-xs text-gray-500 mt-8 fade-in" style="animation-delay:0.8s">
-                © 2025 POLRI - Sistem Informasi Cuti & Izin Personel
+                © 2025 POLDA JATENG - Sistem Informasi Cuti & Izin
             </p>
         </div>
     </div>

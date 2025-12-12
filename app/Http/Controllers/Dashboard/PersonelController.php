@@ -95,18 +95,18 @@ class PersonelController extends Controller
     {
         $nrp = Auth::guard('personel')->user()->nrp;
 
-        // Cek apakah sudah pernah buat pengajuan hari ini
-        $today = now()->toDateString(); // format: YYYY-MM-DD
+        // // Cek apakah sudah pernah buat pengajuan hari ini
+        // $today = now()->toDateString(); // format: YYYY-MM-DD
 
-        $sudahAda = DB::table('pengajuancuti')
-                ->where('personel_id', $nrp)
-                ->whereDate('created_at', $today)
-                ->exists()
-            ||
-            DB::table('pengajuanizin')
-                ->where('personel_id', $nrp)
-                ->whereDate('created_at', $today)
-                ->exists();
+        // $sudahAda = DB::table('pengajuancuti')
+        //         ->where('personel_id', $nrp)
+        //         ->whereDate('created_at', $today)
+        //         ->exists()
+        //     ||
+        //     DB::table('pengajuanizin')
+        //         ->where('personel_id', $nrp)
+        //         ->whereDate('created_at', $today)
+        //         ->exists();
 
         $mulai = $request->mulai_tgl;
         $sampai = $request->sampai_tgl;
@@ -132,9 +132,9 @@ class PersonelController extends Controller
             return back()->with('error', 'Tanggal pengajuan bertabrakan dengan pengajuan lain. Tidak dapat membuat pengajuan.');
         }
 
-        if ($sudahAda) {
-            return redirect()->back()->with('error', 'Anda sudah membuat pengajuan hari ini. Tunggu besok untuk membuat pengajuan baru.');
-        }
+        // if ($sudahAda) {
+        //     return redirect()->back()->with('error', 'Anda sudah membuat pengajuan hari ini. Tunggu besok untuk membuat pengajuan baru.');
+        // }
 
         $request->validate([
             'kode_cuti'     => 'required|exists:cuti,kode_cuti',
@@ -143,7 +143,7 @@ class PersonelController extends Controller
             'pergi_dari'    => 'required|string|max:20',        // WAJIB
             'transportasi'  => 'required|string|max:255',        // WAJIB
             'pengikut'      => 'nullable|string|max:255',
-            'mulai_tgl'     => 'required|date',
+            'mulai_tgl'     => 'required|date|after_or_equal:today',
             'sampai_tgl'    => 'required|date|after_or_equal:mulai_tgl',
             'bukti'         => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
@@ -199,20 +199,20 @@ class PersonelController extends Controller
         // Cek apakah sudah pernah buat pengajuan hari ini
         $today = now()->toDateString();
 
-        $sudahAda = DB::table('pengajuancuti')
-                ->where('personel_id', $nrp)
-                ->whereDate('created_at', $today)
-                ->exists()
-            ||
-            DB::table('pengajuanizin')
-                ->where('personel_id', $nrp)
-                ->whereDate('created_at', $today)
-                ->exists();
+        // $sudahAda = DB::table('pengajuancuti')
+        //         ->where('personel_id', $nrp)
+        //         ->whereDate('created_at', $today)
+        //         ->exists()
+        //     ||
+        //     DB::table('pengajuanizin')
+        //         ->where('personel_id', $nrp)
+        //         ->whereDate('created_at', $today)
+        //         ->exists();
 
 
-        if ($sudahAda) {
-            return redirect()->back()->with('error', 'Anda sudah membuat pengajuan hari ini. Tunggu besok untuk membuat pengajuan baru.');
-        }
+        // if ($sudahAda) {
+        //     return redirect()->back()->with('error', 'Anda sudah membuat pengajuan hari ini. Tunggu besok untuk membuat pengajuan baru.');
+        // }
 
         $mulai = $request->tgl_berangkat;
         $sampai = $request->tgl_kembali;
@@ -245,7 +245,7 @@ class PersonelController extends Controller
             'pergi_dari'    => 'required|string|max:255',
             'transportasi'  => 'required|string|max:255',
             'pengikut'      => 'nullable|string|max:255',
-            'tgl_berangkat' => 'required|date',
+            'tgl_berangkat' => 'required|date|after_or_equal:today',
             'tgl_kembali'   => 'required|date|after_or_equal:tgl_berangkat',
             'bukti'         => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);

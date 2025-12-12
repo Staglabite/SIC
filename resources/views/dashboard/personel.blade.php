@@ -59,7 +59,7 @@
                         @foreach($riwayat as $i => $r)
                         <tr class="hover:bg-indigo-50 transition">
 
-                            <td class="px-6 py-4 text-sm font-medium text-center">{{ $i + 1 }}</td>
+                            <td class="px-6 py-4 text-sm font-medium text-center"></td>
 
                             <td class="px-5">
                                 <span class="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap 

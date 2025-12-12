@@ -92,7 +92,7 @@
 
                                 <div>
                                     <label class="block text-black font-bold mb-2">Tujuan<span style="color: red;">*</span></label>
-                                    <input type="text" name="tujuan" value="{{ old('tujuan') }}" required placeholder="Jakarta" 
+                                    <input type="text" name="tujuan" value="{{ old('tujuan') }}" required placeholder="Misal: Jakarta" 
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                     @error('tujuan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
@@ -126,8 +126,8 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-black font-bold mb-2">Pengikut Cuti</label>
-                                    <input type="text" name="pengikut" value="{{ old('pengikut') }}" placeholder="Keluarga" 
+                                    <label class="block text-black font-bold mb-2">Pengikut Cuti<span style="color: red;">*</span></label>
+                                    <input type="text" name="pengikut" value="{{ old('pengikut') }}" placeholder="Misal: Keluarga" 
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                 </div>
 
@@ -174,28 +174,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-black font-bold mb-2">Keperluan<span style="color: red;">*</span></label>
-                                    <input type="text" name="keperluan" value="{{ old('keperluan') }}" required placeholder="Dinas" 
+                                    <input type="text" name="keperluan" value="{{ old('keperluan') }}" required placeholder="Misal: Dinas" 
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                     @error('keperluan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
-                                    <label class="block text-black font-bold mb-2">Pengikut</label>
-                                    <input type="text" name="pengikut" value="{{ old('pengikut') }}" required placeholder="Keluarga" 
+                                    <label class="block text-black font-bold mb-2">Pengikut<span style="color: red;">*</span></label>
+                                    <input type="text" name="pengikut" value="{{ old('pengikut') }}" required placeholder="Misal: Keluarga" 
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                     @error('pengikut') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-black font-bold mb-2">Pergi Dari<span style="color: red;">*</span></label>
-                                    <input type="text" name="pergi_dari" value="{{ old('pergi_dari', '') }}" required placeholder="Semarang" 
+                                    <input type="text" name="pergi_dari" value="{{ old('pergi_dari', 'Semarang') }}" required
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                     @error('pergi_dari') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
 
                                 <div>
                                     <label class="block text-black font-bold mb-2">Tujuan<span style="color: red;">*</span></label>
-                                    <input type="text" name="tujuan" value="{{ old('tujuan') }}" required placeholder="Jakarta" 
+                                    <input type="text" name="tujuan" value="{{ old('tujuan') }}" required placeholder="Misal: Jakarta" 
                                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">
                                     @error('tujuan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
@@ -223,6 +223,7 @@
                                         <option value="Pesawat" {{ old('transportasi') == 'Pesawat' ? 'selected' : '' }}>Pesawat</option>
                                         <option value="Kapal" {{ old('transportasi') == 'Kapal' ? 'selected' : '' }}>Kapal</option>
                                         <option value="Lainnya" {{ old('transportasi') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                        <option value="Tidak Ada" {{ old('transportasi') == 'TidakAda' ? 'selected' : '' }}>Tidak Ada</option>
                                     </select>
                                     @error('transportasi') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                                 </div>
@@ -236,8 +237,8 @@
                             </div>
 
                             <div>
-                                <label class="block text-black font-bold mb-2">Catatan</label>
-                                <textarea name="catatan" rows="4" placeholder="Detail kegiatan..." 
+                                <label class="block text-black font-bold mb-2">Catatan Tambahan</label>
+                                <textarea name="catatan" rows="4" placeholder="Detail Tambahan..." 
                                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300">{{ old('catatan') }}</textarea>
                             </div>
 
