@@ -10,18 +10,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
-        .sidebar-active { @apply bg-indigo-800 text-white; }
+        .sidebar-active { @apply bg-black text-white; }
     </style>
 </head>
-<body class="h-full bg-gray-100 font-sans antialiased">
+<body class="h-full bg-white font-sans antialiased">
 
 <div class="flex h-full">
 
     <!-- SIDEBAR SATU – TERGANTUNG ROLE -->
-    <div class="w-64 bg-gradient-to-b from-indigo-900 to-purple-900 text-white flex flex-col shadow-2xl">
+    <div class="w-64 bg-white text-black flex flex-col shadow-xl">
         
         <!-- HEADER SICIP (SAMA UNTUK SEMUA ROLE) -->
-        <div class="p-6 border-b border-indigo-800">
+        <div class="p-6 border-b border-black">
             <h1 class="text-2xl font-bold flex items-center gap-3">
                 <i class="fas fa-shield-alt text-yellow-400"></i>
                 SICIP POLRI
@@ -29,23 +29,6 @@
             <p class="text-xs opacity-80 mt-1">Sistem Cuti & Izin Personel</p>
         </div>
 
-        <!-- NAMA ROLE -->
-        @if(Auth::guard('personel')->check())
-            <div class="p-6 text-center border-b border-indigo-800">
-                <h2 class="text-2xl font-bold text-yellow-300">PERSONEL</h2>
-                <p class="text-sm opacity-80">{{ Auth::guard('personel')->user()->name }}</p>
-            </div>
-        @elseif(Auth::guard('renmin')->check())
-            <div class="p-6 text-center border-b border-indigo-800">
-                <h2 class="text-2xl font-bold text-yellow-300">RENMIN</h2>
-                <p class="text-sm opacity-80">Validasi Pengajuan</p>
-            </div>
-        @elseif(Auth::guard('pimpinan')->check())
-            <div class="p-6 text-center border-b border-indigo-800">
-                <h2 class="text-2xl font-bold text-yellow-300">PIMPINAN</h2>
-                <p class="text-sm opacity-80">Dashboard</p>
-            </div>
-        @endif
 
         <!-- MENU SESUAI ROLE -->
         <nav class="flex-1 p-4">
@@ -55,17 +38,17 @@
                 @if(Auth::guard('personel')->check())
                     <li>
                         <a href="{{ route('personel.dashboard') }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition 
-                                  {{ request()->routeIs('personel.dashboard') ? 'bg-indigo-700' : '' }}">
-                            <i class="fas fa-home text-lg"></i>
+                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-200 transition 
+                                  {{ request()->routeIs('personel.dashboard') ? 'bg-gray-200' : '' }}">
+                            <i class="fas fa-home text-lg "></i>
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('personel.pengajuan.create') }}" 
-                            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-700 transition {{ request()->routeIs('personel.pengajuan.create') ? 'bg-green-700' : '' }}">
-                                <i class="fas fa-plus-circle text-green-300 text-lg"></i>
-                                <span class="font-bold">Pengajuan Baru</span>
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-200 transition {{ request()->routeIs('personel.pengajuan.create') ? 'bg-gray-200' : '' }}">
+                                <i class="fas fa-plus-circle text-black text-lg"></i>
+                                <span class="">Pengajuan Baru</span>
                             </a>
                         </a>
                     </li>
@@ -74,18 +57,18 @@
                 @elseif(Auth::guard('renmin')->check())
                     <li>
                         <a href="{{ route('renmin.dashboard') }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-indigo-700 transition 
-                                  {{ request()->routeIs('renmin.dashboard') ? 'bg-indigo-700' : '' }}">
+                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-200 transition 
+                                  {{ request()->routeIs('renmin.dashboard') ? 'bg-gray-200' : '' }}">
                             <i class="fas fa-tachometer-alt text-lg"></i>
-                            <span class="font-bold">DASHBOARD</span>
+                            <span class="font-bold">Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('renmin.validasi') }}"
-                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-purple-700 transition 
-                                  {{ request()->routeIs('renmin.validasi') ? 'bg-purple-700' : '' }}">
+                           class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-200 transition 
+                                  {{ request()->routeIs('renmin.validasi') ? 'bg-gray-200' : '' }}">
                             <i class="fas fa-clipboard-check text-lg"></i>
-                            <span class="font-bold">VALIDASI PENGAJUAN</span>
+                            <span class="font-bold">Validasi Pengajuan</span>
                         </a>
                     </li>
                 
@@ -104,11 +87,11 @@
         </nav>
 
         <!-- LOGOUT SESUAI ROLE -->
-        <div class="p-4 border-t border-indigo-800">
+        <div class="p-4 border-t border-black">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" 
-                        class="flex items-center gap-3 px-6 py-4 rounded-xl font-bold w-full hover:bg-red-600 hover:bg-opacity-30 transition text-center">
+                        class="flex items-center gap-3 px-6 py-4 rounded-xl font-bold w-full hover:bg-gray-500 hover:bg-opacity-30 transition text-center">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>LOGOUT</span>
                 </button>
@@ -147,21 +130,8 @@
 
         <!-- CONTENT -->
         <main class="flex-1 overflow-y-auto">
-            <div class="container mx-auto px-4 py-8">
-                @if(session('success'))
-                    <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-xl flex items-center gap-3">
-                        <i class="fas fa-check-circle"></i> {{ session('success') }}
-                    </div>
-                @endif
-                @if($errors->any())
-                    <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-xl">
-                        <ul class="list-disc list-inside">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+            <div class="mx-auto px-4 py-8">
+
                 @yield('content')
             </div>
         </main>

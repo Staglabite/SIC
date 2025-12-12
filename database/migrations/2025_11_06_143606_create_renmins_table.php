@@ -10,9 +10,15 @@ return new class extends Migration
     {
         Schema::create('renmin', function (Blueprint $table) {
             $table->unsignedBigInteger('kode_renmin')->primary();
+            $table->unsignedBigInteger('kode_satker');
             $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();
+
+            $table->foreign('kode_satker')
+                  ->references('kode_satker')
+                  ->on('satker')
+                  ->onDelete('cascade');
         });
     }
 

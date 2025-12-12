@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
-            $nrp = Auth::user()->nrp; // atau Auth::user()->personel_id
+            $table->string('nrp')->unique();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

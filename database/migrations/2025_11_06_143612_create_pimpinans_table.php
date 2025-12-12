@@ -10,9 +10,15 @@ return new class extends Migration
     {
         Schema::create('pimpinan', function (Blueprint $table) {
             $table->unsignedBigInteger('kode_pimpinan')->primary();
+            $table->unsignedBigInteger('kode_satker');
             $table->string('username')->unique();
             $table->string('password');
             $table->timestamps();
+
+            $table->foreign('kode_satker')
+                  ->references('kode_satker')
+                  ->on('satker')
+                  ->onDelete('cascade');
         });
     }
 

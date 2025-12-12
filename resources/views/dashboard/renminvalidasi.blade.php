@@ -3,44 +3,41 @@
 @section('title', 'Renmin - Validasi Pengajuan')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-10">
+<div class="min-h-screen bg-white py-2">
     <div class="max-w-7xl mx-auto px-4">
 
-        <!-- HEADER -->
-        <div class="bg-white rounded-3xl shadow-2xl border-4 border-indigo-300 p-10 mb-12 text-center">
-            <h1 class="text-5xl font-bold text-indigo-800 flex items-center justify-center gap-5">
-                <i class="fas fa-clipboard-check text-yellow-500 text-6xl"></i>
-                VALIDASI PENGAJUAN
-            </h1>
-            <p class="text-2xl text-gray-700 mt-4">Daftar Semua Pengajuan Cuti & Izin Personel</p>
-        </div>
+    
 
         <!-- TABEL -->
-        <div class="bg-white rounded-3xl shadow-2xl border-4 border-indigo-300 overflow-hidden">
-            <div class="p-8">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-indigo-200" id="tabelValidasi">
-                        <thead class="bg-gradient-to-r from-indigo-100 to-purple-100">
+        <div class="bg-white rounded-xl shadow-2xl border-2 overflow-hidden">
+                <!-- HEADER TABEL -->
+                <div class="p-8">
+                    <h2 class="text-3xl font-bold text-black mb-4">
+                        Tabel Pengajuan
+                    </h2>
+                    <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y" id="tabelValidasi">
+                        <thead class="bg-gray-200">
                             <tr>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">NO</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">NAMA</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">NRP</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">JENIS</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">KEPERLUAN</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">PERIODE</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">STATUS</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">BUKTI</th>
-                                <th class="px-6 py-5 text-left text-xs font-bold text-indigo-700 uppercase">AKSI</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">No</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Nama</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">NRP</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Jenis</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Keperluan</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Tanggal</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Status</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Bukti</th>
+                                <th class="px-6 py-5 text-left text-xs font-bold text-black">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($pengajuan as $i => $p)
                             <tr class="hover:bg-indigo-50 transition">
                                 <td class="px-6 py-5 text-sm font-medium">{{ $i + 1 }}</td>
-                                <td class="px-6 py-5 text-sm font-medium text-indigo-800">{{ $p->nama_personel ?? '-' }}</td>
-                                <td class="px-6 py-5 text-sm font-bold text-purple-700">{{ $p->nrp ?? '-' }}</td>
+                                <td class="px-6 py-5 text-sm font-medium text-black whitespace-nowrap">{{ $p->nama_personel ?? '-' }}</td>
+                                <td class="px-6 py-5 text-sm font-bold text-black">{{ $p->nrp ?? '-' }}</td>
                                 <td class="px-6 py-5">
-                                    <span class="inline-block px-5 py-2.5 rounded-full text-xs font-bold {{ $p->jenis == 'cuti' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
+                                    <span class="whitespace-nowrap inline-block px-5 py-2.5 rounded-full text-xs font-bold {{ $p->jenis == 'cuti' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
                                         {{ strtoupper($p->nama_jenis) }}
                                     </span>
                                 </td>
@@ -51,7 +48,7 @@
                                 </td>
                                 <td class="px-6 py-5">
                                     @php $s = $p->status; @endphp
-                                    <span class="px-5 py-2.5 rounded-full text-xs font-bold 
+                                    <span class="px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap
                                         {{ $s == 'Tervalidasi' ? 'bg-emerald-100 text-emerald-800' : 
                                            ($s == 'Ditolak' ? 'bg-red-100 text-red-800' : 
                                            ($s == 'Tidak Valid' ? 'bg-orange-100 text-orange-800' : 'bg-amber-100 text-amber-800')) }}">
@@ -61,16 +58,16 @@
                                 <td class="px-6 py-5 text-center">
                                     @if($p->pathFile_bukti)
                                         <button onclick="openBuktiModal('{{ asset('storage/' . $p->pathFile_bukti) }}', '{{ $p->namaFile_bukti ?? 'Bukti' }}')" 
-                                                class="text-indigo-600 hover:text-indigo-800 font-bold text-xs">
+                                                class="text-black font-bold text-xs">
                                             <i class="fas fa-paperclip"></i> Lihat
                                         </button>
                                     @else
                                         <span class="text-gray-400 italic text-xs">Tanpa bukti</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-5 text-center space-y-2">
+                                <td class="px-6 py-5 text-center space-y-2 whitespace-nowrap">
                                     <button onclick='openDetailModal({!! json_encode($p) !!})' 
-                                            class="bg-gradient-to-r from-cyan-600 to-blue-700 text-white font-bold px-5 py-2 rounded-lg shadow text-xs">
+                                            class="bg-white text-black font-bold px-5 py-2 rounded-lg shadow text-xs border-2">
                                         DETAILS
                                     </button>
 
@@ -97,7 +94,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-xs font-bold text-gray-600">Sudah Diproses</span>
+                                        <span class="text-xs font-bold text-green-500 ml-5">Sudah Diproses</span>
                                     @endif
                                 </td>
                             </tr>
@@ -131,76 +128,76 @@
     </div>
 </div>
 
-{{-- MODAL DETAILS – LANGSUNG DI SINI --}}
-<div id="detailModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeDetailModal()">
-    <div class="bg-white rounded-3xl shadow-3xl max-w-4xl w-full max-h-screen overflow-y-auto">
-        <div class="bg-gradient-to-r from-indigo-800 to-purple-900 p-8 text-white rounded-t-3xl">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center gap-6">
-                    <div class="bg-yellow-400 rounded-full p-5 shadow-2xl">
-                        <i class="fas fa-shield-alt text-indigo-900 text-5xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-4xl font-bold" id="modalJenisTitle">DETAIL PENGAJUAN</h3>
-                        <p class="text-xl opacity-90">Sistem Cuti & Izin Polri</p>
-                    </div>
-                </div>
-                <button onclick="closeDetailModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-4 transition">
-                    <i class="fas fa-times text-3xl"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="p-10 bg-gray-50">
-            <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-l-8 border-indigo-600">
-                <h4 class="text-2xl font-bold text-indigo-800 mb-4 flex items-center gap-3">
-                    <i class="fas fa-user-tie text-indigo-600"></i> IDENTITAS PERSONEL
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
-                    <div><p class="text-gray-600">Nama</p><p id="modalNama" class="font-bold text-xl text-indigo-800">-</p></div>
-                    <div><p class="text-gray-600">NRP</p><p id="modalNrp" class="font-bold text-xl text-purple-700">-</p></div>
-                    <div><p class="text-gray-600">Pangkat</p><p id="modalPangkat" class="font-semibold">-</p></div>
-                    <div><p class="text-gray-600">Jabatan</p><p id="modalJabatan" class="font-semibold text-indigo-600">-</p></div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-xl p-8 border-l-8 border-purple-600">
-                <h4 class="text-2xl font-bold text-purple-800 mb-6 flex items-center gap-3">
-                    <i class="fas fa-file-alt text-purple-600"></i> DETAIL PENGAJUAN
-                </h4>
-                <div class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div><p class="text-gray-600 font-medium">Jenis</p><p id="modalJenis" class="text-2xl font-bold text-indigo-700">-</p></div>
-                        <div><p class="text-gray-600 font-medium">Keperluan</p><p id="modalKeperluan" class="text-xl font-semibold">-</p></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-l-4 border-green-600">
-                            <p class="text-sm text-gray-600">Mulai</p><p id="modalTglMulai" class="text-xl font-bold text-green-700">-</p>
+        {{-- MODAL DETAILS – LANGSUNG DI SINI --}}
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-80 hidden flex items-center justify-center z-50 p-4" onclick="if(event.target === this) closeDetailModal()">
+            <div class="bg-white rounded-3xl shadow-3xl max-w-4xl w-full max-h-screen overflow-y-auto">
+                <div class="bg-white p-8 text-black rounded-t-3xl">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-6">
+                            <div class="bg-gray-200 rounded-full p-5 shadow-2xl">
+                                <i class="fas fa-paper-plane text-blue-600 text-5xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-4xl font-bold" id="modalJenisTitle">DETAIL PENGAJUAN</h3
+                            </div>
                         </div>
-                        <div class="bg-gradient-to-r from-red-50 to-rose-50 p-5 rounded-xl border-l-4 border-red-600">
-                            <p class="text-sm text-gray-600">Selesai</p><p id="modalTglSelesai" class="text-xl font-bold text-red-700">-</p>
+                        <button onclick="closeDetailModal()" class="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-4 transition">
+                            <i class="fas fa-times text-3xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-10 bg-gray-50">
+                    <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border-l-8 border-gray-200">
+                        <h4 class="text-2xl font-bold text-black mb-4 flex items-center gap-3">
+                            <i class="fas fa-user-tie text-blue-600"></i> Identitas Personel
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+                            <div><p class="text-gray-600">Nama</p><p id="modalNama" class="font-semibold text-xl text-black">-</p></div>
+                            <div><p class="text-gray-600">NRP</p><p id="modalNrp" class="font-semibold text-xl text-black">-</p></div>
+                            <div><p class="text-gray-600">Pangkat</p><p id="modalPangkat" class="font-semibold">-</p></div>
+                            <div><p class="text-gray-600">Jabatan</p><p id="modalJabatan" class="font-semibold text-black">-</p></div>
+                            <div><p class="text-gray-600">Golongan</p><p id="modalGolongan" class="font-semibold text-black">-</p></div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div><p class="text-gray-600 font-medium">Dari</p><p id="modalPergiDari" class="font-semibold">-</p></div>
-                        <div><p class="text-gray-600 font-medium">Tujuan</p><p id="modalTujuan" class="font-semibold text-indigo-700">-</p></div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div><p class="text-gray-600 font-medium">Transportasi</p><p id="modalTransportasi" class="font-semibold">-</p></div>
-                        <div><p class="text-gray-600 font-medium">Pengikut</p><p id="modalPengikut" class="font-semibold text-purple-700">-</p></div>
-                    </div>
-                    <div class="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-400">
-                        <p class="text-gray-700 font-medium mb-2">Catatan</p>
-                        <p id="modalCatatan" class="italic text-gray-800">Tidak ada catatan</p>
-                    </div>
-                    <div class="text-right pt-6 border-t">
-                        <p class="text-sm text-gray-500">Dibuat: <span id="modalCreatedAt" class="font-bold text-indigo-700">-</span></p>
+
+                    <div class="bg-white rounded-2xl shadow-xl p-8 border-l-8 border-gray-200">
+                        <h4 class="text-2xl font-bold text-black mb-6 flex items-center gap-3">
+                            <i class="fas fa-file-alt text-blue-600"></i> DETAIL PENGAJUAN
+                        </h4>
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div><p class="text-gray-600 font-medium">Jenis</p><p id="modalJenis" class="text-xl font-semibold text-black">-</p></div>
+                                <div><p class="text-gray-600 font-medium">Keperluan</p><p id="modalKeperluan" class="text-xl font-semibold">-</p></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-5 rounded-xl border-l-4 border-green-600">
+                                    <p class="text-sm text-gray-600">Mulai</p><p id="modalTglMulai" class="text-xl font-bold text-black">-</p>
+                                </div>
+                                <div class="bg-gradient-to-r from-red-50 to-rose-50 p-5 rounded-xl border-l-4 border-red-600">
+                                    <p class="text-sm text-gray-600">Selesai</p><p id="modalTglSelesai" class="text-xl font-bold text-black">-</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div><p class="text-gray-600 font-medium">Dari</p><p id="modalPergiDari" class="font-semibold">-</p></div>
+                                <div><p class="text-gray-600 font-medium">Tujuan</p><p id="modalTujuan" class="font-semibold text-black">-</p></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-6">
+                                <div><p class="text-gray-600 font-medium">Transportasi</p><p id="modalTransportasi" class="font-semibold">-</p></div>
+                                <div><p class="text-gray-600 font-medium">Pengikut</p><p id="modalPengikut" class="font-semibold text-black">-</p></div>
+                            </div>
+                            <div class="bg-yellow-50 p-6 rounded-xl border-2 border-yellow-400">
+                                <p class="text-gray-700 font-medium mb-2">Catatan</p>
+                                <p id="modalCatatan" class="italic text-gray-800">Tidak ada catatan</p>
+                            </div>
+                            <div class="text-right pt-6 border-t">
+                                <p class="text-sm text-gray-500">Dibuat: <span id="modalCreatedAt" class="font-bold text-indigo-700">-</span></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
 <script>
 // BUKTI MODAL
@@ -224,26 +221,30 @@ function closeBuktiModal() {
     document.body.style.overflow = 'auto';
 }
 
-// DETAIL MODAL
-function openDetailModal(data) {
-    document.getElementById('modalNama').textContent = data.nama_personel || '-';
-    document.getElementById('modalNrp').textContent = data.nrp || '-';
-    document.getElementById('modalPangkat').textContent = data.pangkat || 'Tidak tersedia';
-    document.getElementById('modalJabatan').textContent = data.jabatan || 'Tidak tersedia';
-    document.getElementById('modalJenisTitle').textContent = data.jenis === 'cuti' ? 'DETAIL CUTI' : 'DETAIL IZIN';
-    document.getElementById('modalJenis').textContent = data.nama_jenis || '-';
-    document.getElementById('modalKeperluan').textContent = data.keterangan || '-';
-    document.getElementById('modalTglMulai').textContent = formatDate(data.tanggal_mulai);
-    document.getElementById('modalTglSelesai').textContent = data.tanggal_selesai ? formatDate(data.tanggal_selesai) : '-';
-    document.getElementById('modalPergiDari').textContent = data.pergi_dari || '-';
-    document.getElementById('modalTujuan').textContent = data.tujuan || '-';
-    document.getElementById('modalTransportasi').textContent = data.transportasi || '-';
-    document.getElementById('modalPengikut').textContent = data.pengikut || 'Tidak ada';
-    document.getElementById('modalCatatan').textContent = data.catatan || 'Tidak ada catatan';
-    document.getElementById('modalCreatedAt').textContent = new Date(data.created_at).toLocaleString('id-ID');
-    document.getElementById('detailModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
+        function openDetailModal(data) {
+            document.getElementById('modalNama').textContent = data.nama_personel || '-';
+            document.getElementById('modalNrp').textContent = data.nrp || '-';
+            document.getElementById('modalPangkat').textContent = data.pangkat || '-';
+            document.getElementById('modalJabatan').textContent = data.jabatan || '-';
+            document.getElementById('modalGolongan').textContent = data.golongan || '-'; // ← BARU
+
+            document.getElementById('modalJenisTitle').textContent = data.jenis === 'cuti' ? 'Detail Cuti' : 'Detail Izin';
+            document.getElementById('modalJenis').textContent = data.nama_jenis || '-';
+            document.getElementById('modalKeperluan').textContent = data.keterangan || '-';
+            document.getElementById('modalTglMulai').textContent = formatDate(data.tanggal_mulai);
+            document.getElementById('modalTglSelesai').textContent = data.tanggal_selesai ? formatDate(data.tanggal_selesai) : '-';
+            
+            document.getElementById('modalPergiDari').textContent = data.pergi_dari || '-';
+            document.getElementById('modalTujuan').textContent = data.tujuan || '-';
+            document.getElementById('modalTransportasi').textContent = data.transportasi || '-';
+            document.getElementById('modalPengikut').textContent = data.pengikut || '-';
+            document.getElementById('modalCatatan').textContent = data.catatan || 'Tidak ada catatan';
+            
+            document.getElementById('modalCreatedAt').textContent = new Date(data.created_at).toLocaleString('id-ID');
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
 function closeDetailModal() {
     document.getElementById('detailModal').classList.add('hidden');
     document.body.style.overflow = 'auto';

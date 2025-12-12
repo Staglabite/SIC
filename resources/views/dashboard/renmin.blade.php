@@ -4,17 +4,9 @@
 @section('title', 'Dashboard Renmin - Statistik Pengajuan')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 py-10">
+<div class="min-h-screen bg-white py-2">
     <div class="max-w-7xl mx-auto px-4">
 
-        <!-- HEADER -->
-        <div class="bg-white rounded-3xl shadow-2xl border-4 border-indigo-300 p-10 mb-12 text-center">
-            <h1 class="text-5xl font-bold text-indigo-800 flex items-center justify-center gap-5">
-                <i class="fas fa-user-shield text-yellow-500 text-6xl"></i>
-                DASHBOARD RENMIN
-            </h1>
-            <p class="text-2xl text-gray-700 mt-4">Statistik Pengajuan Cuti & Izin Personel</p>
-        </div>
 
         <!-- KARTU STATISTIK -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -64,8 +56,8 @@
         </div>
 
         <!-- GRAFIK BULANAN -->
-        <div class="bg-white rounded-3xl shadow-2xl p-10 border-4 border-indigo-200">
-            <h3 class="text-3xl font-bold text-indigo-800 mb-8 text-center">Pengajuan per Bulan Tahun 2025</h3>
+        <div class="bg-white rounded-3xl shadow-2xl p-10 border-2">
+            <h3 class="text-3xl font-bold text-black mb-8 text-center">Pengajuan per Bulan Tahun 2025</h3>
             <canvas id="chartPengajuan" height="120"></canvas>
         </div>
     </div>

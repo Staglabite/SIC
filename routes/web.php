@@ -39,28 +39,24 @@ Route::middleware('auth:renmin')->prefix('dashboard')->name('renmin.')->group(fu
 
 Route::middleware('auth:personel')->prefix('dashboard')->name('personel.')->group(function () {
 
-    // Dashboard + Riwayat
-    Route::get('/personel', [PersonelController::class, 'index'])
-         ->name('dashboard');
+    Route::get('/personel', [PersonelController::class, 'index'])->name('dashboard');
 
-    // Form Pengajuan Baru (satu halaman untuk cuti & izin)
     Route::get('/personel/pengajuan/create', [PersonelController::class, 'create'])
          ->name('pengajuan.create');
 
-    // === 2 ROUTE TERPISAH (SESUAI PERMINTAANMU) ===
     Route::post('/personel/cuti/store', [PersonelController::class, 'storeCuti'])
          ->name('cuti.store');
 
     Route::post('/personel/izin/store', [PersonelController::class, 'storeIzin'])
          ->name('izin.store');
-    // ============================================
 
-    // Edit & Update (hanya Tidak Valid)
-    Route::get('/personel/pengajuan/{id}/{tipe}/edit', [PersonelController::class, 'edit'])
+    // INI YANG PENTING — HARUS ADA & BENAR!!!
+    Route::get('/personel/pengajuan/{id}/edit', [PersonelController::class, 'edit'])
          ->name('pengajuan.edit');
 
-    Route::put('/personel/pengajuan/{id}/{tipe}', [PersonelController::class, 'update'])
+    Route::put('/personel/pengajuan/{id}', [PersonelController::class, 'update'])
          ->name('pengajuan.update');
+    // ← INI YANG DIPANGGIL OLEH AJAX KITA
 
     Route::post('/personel/pengajuan/kirim-ulang', [PersonelController::class, 'kirimUlang'])
          ->name('pengajuan.kirim-ulang');

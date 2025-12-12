@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('personel', function (Blueprint $table) {
             $table->string('nrp')->primary();
-            $table->unsignedBigInteger('satker_id');
+            $table->unsignedBigInteger('kode_satker');
             $table->string('password');
             $table->string('name');
             $table->string('pangkat');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('role');
             $table->timestamps();
 
-            $table->foreign('satker_id')
+            $table->foreign('kode_satker')
                   ->references('kode_satker')
                   ->on('satker')
                   ->onDelete('cascade');

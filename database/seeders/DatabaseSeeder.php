@@ -28,25 +28,26 @@ class DatabaseSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // INSERT DATA BARU (PASTI MASUK!)
+
+        Satker::create([
+            'name'          => 'Polresta Bandung',
+            'deskripsi'     => 'Satuan Kerja Utama',
+        ]);
+
         Renmin::create([
             'kode_renmin' => 1,
             'username'    => 'renmin01',
             'password'    => Hash::make('renmin123'),
+            'kode_satker' => 1
         ]);
 
         Pimpinan::create([
             'kode_pimpinan' => 1,
             'username'      => 'pimpinan01',
             'password'      => Hash::make('pimpinan123'),
+            'kode_satker' => 1
         ]);
 
-        Satker::create([
-            'kode_satker'   => 1,
-            'kode_renmin'   => 1,
-            'kode_pimpinan' => 1,
-            'name'          => 'Polresta Bandung',
-            'deskripsi'     => 'Satuan Kerja Utama',
-        ]);
 
         Personel::create([
             'nrp'       => '1234567890123456',
@@ -56,7 +57,7 @@ class DatabaseSeeder extends Seeder
             'golongan'  => 'III/c',
             'jabatan'   => 'Kapolsek',
             'role'      => 'personel',
-            'satker_id' => 1,
+            'kode_satker' => 1,
         ]);
     }
 }
